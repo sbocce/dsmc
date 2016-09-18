@@ -2,7 +2,7 @@ CMP = g++  -c
 LNK = g++
 OPT = 
 
-OBJS =  mesh.o  cell.o  stat_tools.o
+OBJS =  solver.o  mesh.o  cell.o  stat_tools.o
 
 
 # Main object
@@ -15,6 +15,9 @@ main.exe:  main.o  $(OBJS)
 
 main.o:                 main.cpp  $(OBJS)
 	$(CMP) $(OPT)   main.cpp 
+
+solver.o:               solver.cpp
+	$(CMP) $(OPT)   solver.cpp
 
 mesh.o:                 mesh.cpp  cell.o  stat_tools.o
 	$(CMP) $(OPT)   mesh.cpp 

@@ -3,7 +3,6 @@
 #include <sstream>
 
 #include "mesh.h"
-#include "stat_tools.h"
 
 void mesh::set_n_cells(int nn) 
 {
@@ -60,24 +59,6 @@ void mesh::create()
 
   }
 
-}
-
-//------------------------------------------------------
-
-void mesh::fill_cells()
-{
-  int PARTICLES_PER_CELL = 12; // <<<<<<<<<<<<<<<<<<<<<<<<<------------------  !!!!!!
-
-  // For each cell, fill it properly. "id_c" stands for "id_cell". "id_p" for "id_particle"
-  double x, y, z, u, v, w; 
-
-  for(int id_c = 0; id_c < n_cells; ++id_c) { 
-    // create particles and assign them to the cell
-    for(int id_p = 0; id_p < PARTICLES_PER_CELL; ++id_p) {
-      // Generate a particle
-      x = sample_uniform_dist(cells.at(id_c).XYZcorners[0], cells.at(id_c);
-    }
-  }
 }
 
 //------------------------------------------------------

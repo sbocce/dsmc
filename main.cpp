@@ -1,10 +1,7 @@
 #include <iostream>
-#include <vector>
-#include <cstdlib> // for rand() and srand()
 
-//#include "particle.h"
-#include "cell.h"
 #include "mesh.h"
+#include "solver.h"
 
 
 int main()
@@ -18,6 +15,9 @@ int main()
   // Export mesh
   Msh.export_VTK();
 
+  // 2) Create solver object
+  solver Slvr(&Msh);
+  Slvr.seed_particles();
 
   // 2) do the rest..
 
