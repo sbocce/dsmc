@@ -5,6 +5,18 @@ solver::solver(mesh* p_msh) : p_mesh(p_msh) { }
 
 //------------------------------------------------------
 
+void solver::initialize()
+{
+std::cout << "Solver: reading input file..." << std::endl;
+
+  std::cout << " ATTENTION: solver.initialize() should read an input file and pick the DeltaT for example!\n";
+  std::cout << "            hard-coded for now!\n";
+
+  dt = 0.001; // <<<-----------------  HHHAAAAAARD COOOODED!!!!!
+}
+
+//------------------------------------------------------
+
 void solver::seed_particles()
 {
   int PARTICLES_PER_CELL = 12; // <<<<<<<<<<<<<<<<<<<<<<<<<------------------  !!!!!!
@@ -22,7 +34,7 @@ void solver::seed_particles()
 
     // create particles and assign them to the cell
     for(int id_p = 0; id_p < PARTICLES_PER_CELL; ++id_p) {
-      // Generate a particle
+      // Generate particle position and velocity
       x = sample_uniform_dist(p_cell_now->XYZcorners[0], 
                               p_cell_now->XYZcorners[1]);
       y = sample_uniform_dist(p_cell_now->XYZcorners[2],
