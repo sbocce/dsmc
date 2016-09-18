@@ -13,7 +13,6 @@ class mesh {
     int  get_n_cells();
     void set_domain_box(double x1, double x2, double y1, double y2, double z1, double z2);
     void create();
-    void fill_cells();
     void export_VTK();
     void compute_cells_neighbors(cell* p_cell);
   
