@@ -12,6 +12,7 @@ class solver {
     ~solver(){};
     void initialize();
     void seed_particles();
+    void translation_step();
 
   private:
     mesh* p_mesh; // pointer to the mesh

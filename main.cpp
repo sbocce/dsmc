@@ -20,7 +20,7 @@ int main()
   Slvr.initialize();
   Slvr.seed_particles();
 
-//  Slvr.translation_step();
+  Slvr.translation_step();
 
 
 

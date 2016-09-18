@@ -2,7 +2,7 @@ CMP = g++  -c
 LNK = g++
 OPT = 
 
-OBJS =  solver.o  mesh.o  cell.o  stat_tools.o
+OBJS =  solver.o  mesh.o  cell.o  particle.o  stat_tools.o
 
 
 # Main object
@@ -16,14 +16,17 @@ main.exe:  main.o  $(OBJS)
 main.o:                 main.cpp  $(OBJS)
 	$(CMP) $(OPT)   main.cpp 
 
-solver.o:               solver.cpp
+solver.o:               solver.cpp  particle.o
 	$(CMP) $(OPT)   solver.cpp
 
-mesh.o:                 mesh.cpp  cell.o  stat_tools.o
+mesh.o:                 mesh.cpp  cell.o  particle.o  stat_tools.o
 	$(CMP) $(OPT)   mesh.cpp 
 
 cell.o:                 cell.cpp
 	$(CMP) $(OPT)   cell.cpp
+
+particle.o:             particle.cpp
+	$(CMP) $(OPT)   particle.cpp
 
 stat_tools:             stat_tools.cpp
 	$(CMP) $(OPT)   stat_tools.cpp

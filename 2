@@ -20,7 +20,8 @@ std::cout << "Solver: reading input file..." << std::endl;
 void solver::seed_particles()
 {
   int PARTICLES_PER_CELL = 12; // <<<<<<<<<<<<<<<<<<<<<<<<<------------------  !!!!!!
-  double VEL_MAX_component = 100;
+  double VEL_MIN = 90;
+  double VEL_MAX = 110;
 
   // For each cell, fill it properly. "id_c" stands for "id_cell". "id_p" for "id_particle"
   double x, y, z, u, v, w;
@@ -41,9 +42,9 @@ void solver::seed_particles()
       z = sample_uniform_dist(p_cell_now->XYZcorners[4],
                               p_cell_now->XYZcorners[5]);
 
-      u = sample_uniform_dist(0, VEL_MAX_component);
-      v = sample_uniform_dist(0, VEL_MAX_component);
-      w = sample_uniform_dist(0, VEL_MAX_component);
+      u = sample_uniform_dist(VEL_MIN, VEL_MAX);
+      v = sample_uniform_dist(VEL_MIN, VEL_MAX);
+      w = sample_uniform_dist(VEL_MIN, VEL_MAX);
 
       part_now.pos[0] = x;    part_now.pos[1] = y;    part_now.pos[2] = z;
       part_now.vel[0] = u;    part_now.vel[1] = v;    part_now.vel[2] = w;
@@ -55,11 +56,10 @@ void solver::seed_particles()
 
 //------------------------------------------------------
 
-void solver::translation_step()
+void solver::translate_step()
 {
   // Working variables
-  double r_end[3];
-  particle* p_part;  
+  double xend, yend, zend;
 
   // for each cell.... "id_c" stands for "id_cell"
   for(size_t id_c = 0; id_c < p_mesh->get_n_cells(); ++id_c) {
@@ -67,7 +67,6 @@ void solver::translation_step()
     // for each particle..... "id_p" stands for "id_particle"
     for(size_t id_p = 0; id_p < p_mesh->cells.at(id_c).particles.size(); ++id_p) {
 
-      // ---------------------------------------------------------------------------------
       // 1) try to translate the particle
       // 2) is it still in the cell? Great, update the position and skip to the next one! :D
       // 3) if it is out of the cell:
@@ -77,32 +76,7 @@ void solver::translation_step()
       //              translation exceeds it! WARNING: timestep too big! One cell skipped around
       //              x = ..., y = ..., z = ...)    
       //  3.3) is it a boundary face? What kind?
-      //    3.2.1) if it is inflow/outflow face, then just pop out this particle (it went out of the
-      //           domain! It deserves it!
-      //    3.2.2) if it is a solid boundary, reflect it or let it bounce according to the specified
-      //           accommodation factor
-      //    3.2.3) if it is a periodic BC, move it to the cell's "periodic mate"
-      //  --------------------------------------------------------------------------------
-  
-      // Point the pointer to the current particle
-      p_part = &(p_mesh->cells.at(id_c).particles.at(id_p));
-
-      // ========   Point 1)   ===================
-      // ====  try to translate the particle  ====
-      p_part->advect(dt, r_end);
-      std::cout << "DB: " << p_part->pos[0] << " " << p_part->pos[1] << " " << p_part->pos[2] << std::endl;
-      std::cout << "DB: " << p_part->vel[0] << " " << p_part->vel[1] << " " << p_part->vel[2] << std::endl;
-      std::cout << "DB: " << r_end[0] << " " << r_end[1] << " " << r_end[2] << std::endl;
-      std::cout << "\n";
-
-      // =======   Point 2)   =====================
-      // ===  Check if I'm still in the cell  =====
-
-      //else if( (r_end[0] < p_part.pos[1]) && () {
-        // 1) adjourn particle position
-        // 2) "> continue;"
-      //}
-
+      //    3.2.1) if it is inflow/outflow face
     }
  
   }
