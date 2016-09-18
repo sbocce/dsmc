@@ -15,13 +15,9 @@ int main()
   Msh.set_domain_box(-1.5, 5, 0, 1, -0.5, 0.5);   // Set outer compuational domain
   Msh.create();
 
-  std::cout << "Num celle: " << Msh.get_n_cells() << std::endl;
+  // Export mesh
+  Msh.export_VTK();
 
-  for(size_t ii = 0; ii < Msh.get_n_cells() ; ++ii)
-  {
-    std::cout << Msh.cells.at(ii).XYZcorners[0] << std::endl;
-    std::cout << Msh.cells.at(ii).XYZcorners[1] << std::endl << std::endl;
-  }
 
   // 2) do the rest..
 

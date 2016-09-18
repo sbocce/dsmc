@@ -2,7 +2,7 @@ CMP = g++  -c
 LNK = g++
 OPT = 
 
-OBJS = mesh.o
+OBJS =  mesh.o  cell.o  stat_tools.o
 
 
 # Main object
@@ -16,11 +16,14 @@ main.exe:  main.o  $(OBJS)
 main.o:                 main.cpp  $(OBJS)
 	$(CMP) $(OPT)   main.cpp 
 
-mesh.o:                 mesh.cpp
+mesh.o:                 mesh.cpp  cell.o  stat_tools.o
 	$(CMP) $(OPT)   mesh.cpp 
 
+cell.o:                 cell.cpp
+	$(CMP) $(OPT)   cell.cpp
 
-
+stat_tools:             stat_tools.cpp
+	$(CMP) $(OPT)   stat_tools.cpp
 
 clean: 
 	@echo cleaning objects, modules and executables 
