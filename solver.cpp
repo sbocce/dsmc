@@ -59,10 +59,13 @@ void solver::translation_step()
 {
   // Working variables
   double r_end[3];
+  cell*     p_cell;
   particle* p_part;  
 
   // for each cell.... "id_c" stands for "id_cell"
   for(size_t id_c = 0; id_c < p_mesh->get_n_cells(); ++id_c) {
+
+    p_cell = &(p_mesh->cells.at(id_c)); // pointer to the current cell
 
     // for each particle..... "id_p" stands for "id_particle"
     for(size_t id_p = 0; id_p < p_mesh->cells.at(id_c).particles.size(); ++id_p) {
@@ -90,6 +93,7 @@ void solver::translation_step()
       // ========   Point 1)   ===================
       // ====  try to translate the particle  ====
       p_part->advect(dt, r_end);
+
       std::cout << "DB: " << p_part->pos[0] << " " << p_part->pos[1] << " " << p_part->pos[2] << std::endl;
       std::cout << "DB: " << p_part->vel[0] << " " << p_part->vel[1] << " " << p_part->vel[2] << std::endl;
       std::cout << "DB: " << r_end[0] << " " << r_end[1] << " " << r_end[2] << std::endl;
@@ -98,10 +102,14 @@ void solver::translation_step()
       // =======   Point 2)   =====================
       // ===  Check if I'm still in the cell  =====
 
-      //else if( (r_end[0] < p_part.pos[1]) && () {
-        // 1) adjourn particle position
-        // 2) "> continue;"
-      //}
+      if( (r_end[0] < p_cell->XYZcorners[1]) && (r_end[0] > p_cell->XYZcorners[0]) &&
+          (r_end[1] < p_cell->XYZcorners[3]) && (r_end[1] > p_cell->XYZcorners[2]) &&
+          (r_end[2] < p_cell->XYZcorners[5]) && (r_end[2] > p_cell->XYZcorners[4])  )
+      {
+        // adjourn particle position, then switch to the next particle
+        p_part->pos[0] = r_end[0];
+        continue;
+      }
 
     }
  
