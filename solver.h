@@ -2,6 +2,7 @@
 #define SOLVER_H
 
 #include <iostream>
+#include <math.h>
 
 #include "mesh.h"
 

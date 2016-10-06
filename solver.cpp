@@ -58,16 +58,18 @@ void solver::seed_particles()
 void solver::translation_step()
 {
   // Working variables
-  double r_end[3];
+  double    r_end[3];
   cell*     p_cell;
   particle* p_part;  
+
+  bool x_is_in, y_is_in, z_is_in;
 
   // for each cell.... "id_c" stands for "id_cell"
   for(size_t id_c = 0; id_c < p_mesh->get_n_cells(); ++id_c) {
 
     p_cell = &(p_mesh->cells.at(id_c)); // pointer to the current cell
 
-    // for each particle..... "id_p" stands for "id_particle"
+    // for each particle of the cell..... "id_p" stands for "id_particle"
     for(size_t id_p = 0; id_p < p_mesh->cells.at(id_c).particles.size(); ++id_p) {
 
       // ---------------------------------------------------------------------------------
@@ -102,18 +104,44 @@ void solver::translation_step()
       // =======   Point 2)   =====================
       // ===  Check if I'm still in the cell  =====
 
-      if( (r_end[0] < p_cell->XYZcorners[1]) && (r_end[0] > p_cell->XYZcorners[0]) &&
-          (r_end[1] < p_cell->XYZcorners[3]) && (r_end[1] > p_cell->XYZcorners[2]) &&
-          (r_end[2] < p_cell->XYZcorners[5]) && (r_end[2] > p_cell->XYZcorners[4])  )
-      {
+      x_is_in = (r_end[0] < p_cell->XYZcorners[1]) && (r_end[0] > p_cell->XYZcorners[0]);
+      y_is_in = (r_end[1] < p_cell->XYZcorners[3]) && (r_end[1] > p_cell->XYZcorners[2]);
+      z_is_in = (r_end[2] < p_cell->XYZcorners[5]) && (r_end[2] > p_cell->XYZcorners[4]);
+
+      if( x_is_in && y_is_in && z_is_in  ) {
         // adjourn particle position, then switch to the next particle
         p_part->pos[0] = r_end[0];
         continue;
       }
 
+      // =======   Point 3)   =====================
+      // ====  If I'm out of the cell..   =========
+      // !!!!!!!!!!!   THIS IS GOING TO WORK ONLY FOR 1D CASE   !!!!!!!!!!!!!!!!
+      // !!!!!!!!!!!   3.1) process y and z with the MODULUS function
+      // y_new = y_bottom + (y - y_bottom) % l_side
+      // #include <math.h>;  then use fmod(x, y)  === x % y for doubles
+
+      // y AND z ARE SYMMETRY AND I'M IN 1D
+      if( !y_is_in ) {
+	      r_end[1] = p_cell->XYZcorners[2] + fmod(r_end[1] - p_cell->XYZcorners[2], p_cell->get_side(1));
+      }
+      if( !z_is_in ) {
+	      r_end[2] = p_cell->XYZcorners[4] + fmod(r_end[2] - p_cell->XYZcorners[4], p_cell->get_side(2));
+      }
+      if( !x_is_in) { // neighboring cell? Reflecting surface?
+
+        // [...]
+
+        // If the particle has exited, REMOVE IT FROM THE CELL!
+      }
+
+
+      // And once it's done, implement some kind of validation and export it!!!!!!
     }
  
   }
 
   // Is it in the same cell as before?
 }
+
+
