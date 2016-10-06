@@ -8,7 +8,7 @@ class exporter {
   public:
     exporter(mesh* p_msh);
     ~exporter(){};
-    void export_mesh_VTK(const char* filename);
+    void export_mesh_VTK(const char* filename); 
     void export_partpercell_VTK(); // TEMPORARY EXPORTING FUNCTION
 
   private:
