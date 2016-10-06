@@ -15,7 +15,7 @@ int main()
 
   // 2) Create exporter object
   exporter Exptr(&Msh);
-  Exptr.export_mesh_VTK("VTK_mesh.vtk"); 
+  Exptr.export_mesh_VTK("VTK_mesh.vtk");  
 
   // 3) Create solver object
   solver Slvr(&Msh);
