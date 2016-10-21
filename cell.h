@@ -28,6 +28,7 @@ class cell {
     // Utilities
     void   set_id(size_t cell_id);
     size_t get_id();
+    void   advect_particle(size_t particle_id, double dt);
     void   remove_particle(size_t particle_id);
 
   private:

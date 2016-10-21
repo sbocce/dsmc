@@ -60,7 +60,7 @@ void solver::translation_step()
   // Working variables
   double    r_end[3];
   cell*     p_cell;
-  particle* p_part;  
+// REMOVE ME  //  particle* p_part;  
 
   bool x_is_in, y_is_in, z_is_in;
 
@@ -72,72 +72,14 @@ void solver::translation_step()
     // for each particle of the cell..... "id_p" stands for "id_particle"
     for(size_t id_p = 0; id_p < p_mesh->cells.at(id_c).particles.size(); ++id_p) {
 
-      // ---------------------------------------------------------------------------------
-      // 1) try to translate the particle
-      // 2) is it still in the cell? Great, update the position and skip to the next one! :D
-      // 3) if it is out of the cell:
-      //  3.1) find which surface was crossed (boh.. I can maybe compare angles..)
-      //  3.2) is it a standard face?
-      //       yes -> find the neighboring cell and put it inside it (where? Throw a warning if the
-      //              translation exceeds it! WARNING: timestep too big! One cell skipped around
-      //              x = ..., y = ..., z = ...)    
-      //  3.3) is it a boundary face? What kind?
-      //    3.2.1) if it is inflow/outflow face, then just pop out this particle (it went out of the
-      //           domain! It deserves it!
-      //    3.2.2) if it is a solid boundary, reflect it or let it bounce according to the specified
-      //           accommodation factor
-      //    3.2.3) if it is a periodic BC, move it to the cell's "periodic mate"
-      //  --------------------------------------------------------------------------------
-  
-      // Point the pointer to the current particle
-      p_part = &(p_mesh->cells.at(id_c).particles.at(id_p));
+      p_cell->advect_particle(id_p, dt);
 
-      // ========   Point 1)   ===================
-      // ====  try to translate the particle  ====
-      p_part->advect(dt, r_end);
-
-      std::cout << "DB: " << p_part->pos[0] << " " << p_part->pos[1] << " " << p_part->pos[2] << std::endl;
-      std::cout << "DB: " << p_part->vel[0] << " " << p_part->vel[1] << " " << p_part->vel[2] << std::endl;
-      std::cout << "DB: " << r_end[0] << " " << r_end[1] << " " << r_end[2] << std::endl;
-      std::cout << "\n";
-
-      // =======   Point 2)   =====================
-      // ===  Check if I'm still in the cell  =====
-
-      x_is_in = (r_end[0] < p_cell->XYZcorners[1]) && (r_end[0] > p_cell->XYZcorners[0]);
-      y_is_in = (r_end[1] < p_cell->XYZcorners[3]) && (r_end[1] > p_cell->XYZcorners[2]);
-      z_is_in = (r_end[2] < p_cell->XYZcorners[5]) && (r_end[2] > p_cell->XYZcorners[4]);
-
-      if( x_is_in && y_is_in && z_is_in  ) {
-        // adjourn particle position, then switch to the next particle
-        p_part->pos[0] = r_end[0];
-        continue;
-      }
-
-      // =======   Point 3)   =====================
-      // ====  If I'm out of the cell..   =========
-      // !!!!!!!!!!!   THIS IS GOING TO WORK ONLY FOR 1D CASE   !!!!!!!!!!!!!!!!
-      // !!!!!!!!!!!   3.1) process y and z with the MODULUS function
-      // y_new = y_bottom + (y - y_bottom) % l_side
-      // #include <math.h>;  then use fmod(x, y)  === x % y for doubles
-
-      // y AND z ARE SYMMETRY AND I'M IN 1D
-      if( !y_is_in ) {
-	      r_end[1] = p_cell->XYZcorners[2] + fmod(r_end[1] - p_cell->XYZcorners[2], p_cell->get_side(1));
-      }
-      if( !z_is_in ) {
-	      r_end[2] = p_cell->XYZcorners[4] + fmod(r_end[2] - p_cell->XYZcorners[4], p_cell->get_side(2));
-      }
-      if( !x_is_in) { // neighboring cell? Reflecting surface?
-
-        // [...]
-
-        // If the particle has exited, REMOVE IT FROM THE CELL!
-      }
-
-
-      // And once it's done, implement some kind of validation and export it!!!!!!
     }
+
+    // And once it's done, implement some kind of validation and export it!!!!!!
+    
+    // [... export ...]
+    
  
   }
 

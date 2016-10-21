@@ -25,6 +25,5 @@ int main()
   Slvr.translation_step();
   Exptr.export_partpercell_VTK("VTK_partpercell.vtk"); // for debugging reasons
 
-
   return 0;
 }
