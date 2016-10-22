@@ -22,6 +22,7 @@ int main()
   Slvr.initialize();
   Slvr.seed_particles();
 
+  // 4) Let's make some steps..
   Slvr.translation_step();
   Exptr.export_partpercell_VTK("VTK_partpercell.vtk"); // for debugging reasons
 

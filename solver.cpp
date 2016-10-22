@@ -1,3 +1,6 @@
+#include <iostream>
+#include <math.h>
+
 #include "solver.h"
 #include "stat_tools.h"
 
@@ -13,6 +16,8 @@ std::cout << "Solver: reading input file..." << std::endl;
   std::cout << "            hard-coded for now!\n";
 
   dt = 0.001; // <<<-----------------  HHHAAAAAARD COOOODED!!!!!
+
+  sol_type = "1D";
 }
 
 //------------------------------------------------------
@@ -62,8 +67,6 @@ void solver::translation_step()
   cell*     p_cell;
 // REMOVE ME  //  particle* p_part;  
 
-  bool x_is_in, y_is_in, z_is_in;
-
   // for each cell.... "id_c" stands for "id_cell"
   for(size_t id_c = 0; id_c < p_mesh->get_n_cells(); ++id_c) {
 
@@ -72,7 +75,7 @@ void solver::translation_step()
     // for each particle of the cell..... "id_p" stands for "id_particle"
     for(size_t id_p = 0; id_p < p_mesh->cells.at(id_c).particles.size(); ++id_p) {
 
-      p_cell->advect_particle(id_p, dt);
+      p_cell->advect_particle(id_p, dt, sol_type);
 
     }
 

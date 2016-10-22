@@ -1,4 +1,6 @@
 #include <stdlib.h>     /* exit, EXIT_FAILURE */
+#include <string.h>
+#include <math.h>
 
 #include "cell.h"
 
@@ -60,7 +62,7 @@ double cell::get_volume()
 
 // --------------------------------------------
 
-void cell::advect_particle(size_t particle_id, double dt)
+void cell::advect_particle(size_t particle_id, double dt, const char* sol_type)
 {
   // --------------------------------------------------------------------------
   // The following is done for each direction independently 
@@ -75,8 +77,13 @@ void cell::advect_particle(size_t particle_id, double dt)
   //   2.1) no  -> great, update the position and skip to the next cell
   //   2.2) yes -> ouch..
   //
-  //     2.2.1) find out which face was crossed (first or second)
-  //     2.2.2) act accordingly:
+  //     2.2.1) is it a periodicity direction? 1D or 2D simulations for example..
+  //            
+  //       2.2.1.1) yes -> then just apply modulus function
+  //       2.2.1.2) no -> ..ok... 
+  // 
+  //         2.2.1.2.1) find out which face was crossed (first or second)
+  //         2.2.1.2.2) act accordingly:
   //            - Free face:    move particle to the neighboring cell
   //            - Outflow face: just remove the particle
   //            - Solid wall:   re-emit the particle inside the cell with a velocity 
@@ -84,18 +91,105 @@ void cell::advect_particle(size_t particle_id, double dt)
   // --------------------------------------------------------------------------
 
   double new_pos[3];
+  bool   particle_crossed_face_A, particle_crossed_face_B; // working variables
+  size_t side_1, side_2; // working variables
 
 std::cout << "DB: Advecting particle " << particle_id << std::endl;
 
-  for(size_t id_dir = 0; id_dir < 3; ++id_dir) { // for each direction.. x, y, z
- 
-    // try to update position 
-    new_pos[id_dir] =   particles.at(particle_id).pos[id_dir] 
-                      + particles.at(particle_id).vel[id_dir]*dt;
-    
+  // ------  1D case  ------
+  // It is simplified!
+  // 1) I compute the adjourned position
+  // 2) If the particle exits from the Y or Z faces, I use the modulus function to
+  //    implement periodicity
+  // 3) If the particle exits from the X face I check which face was it and then 
+  //    treat it accordingly
+  // 
+  if( !strcmp(sol_type, "1D")) {
+
+    new_pos[0] =   particles.at(particle_id).pos[0] + particles.at(particle_id).vel[0]*dt;
+    new_pos[1] =   particles.at(particle_id).pos[1] + particles.at(particle_id).vel[1]*dt;
+    new_pos[2] =   particles.at(particle_id).pos[2] + particles.at(particle_id).vel[2]*dt;
+
+    // Apply module function if particle exited from Y cells or Z cells
+
+    // --- Y direction ---
+    particle_crossed_face_A = (new_pos[1] < XYZcorners[2]);
+    particle_crossed_face_B = (new_pos[1] > XYZcorners[3]);
+    if(particle_crossed_face_B) {
+      new_pos[1] = XYZcorners[2] + fmod(new_pos[1] - XYZcorners[3], get_side(1));
+    } else if(particle_crossed_face_A) {
+      new_pos[1] = XYZcorners[3] - fmod(XYZcorners[2] - new_pos[1], get_side(1));
+    }
+
+    // --- Z direction ---
+    particle_crossed_face_A = (new_pos[2] < XYZcorners[4]);
+    particle_crossed_face_B = (new_pos[2] > XYZcorners[5]);
+    if(particle_crossed_face_B) {
+      new_pos[2] = XYZcorners[4] + fmod(new_pos[2] - XYZcorners[5], get_side(2));
+    } else if(particle_crossed_face_A) {
+      new_pos[2] = XYZcorners[5] - fmod(XYZcorners[4] - new_pos[2], get_side(2));
+    }
+
+    // --- X direction ---
+    // FOR NOW I KEEP IT FREE!!!!
+
+    // Adjourn particle position
+    particles.at(particle_id).pos[0] = new_pos[0];
+    particles.at(particle_id).pos[1] = new_pos[1];
+    particles.at(particle_id).pos[2] = new_pos[2];
+
+  } else {
+    std::cout << "Solution for domain type '" << sol_type << "' not implemented yet!\n";  
   }
 
+  std::cout << "CELL " << this->id << "  " << particle_id << "  "
+            << "  " << new_pos[0] << "  " << new_pos[1] << "  " << new_pos[2] << std::endl;
 
+
+  //// -----------------------------------------
+  //// GENERIC CASE: 3D (.....embrionale..)
+  //// -----------------------------------------
+  //for(size_t id_dir = 0; id_dir < 3; ++id_dir) { // for each direction.. x, y, z
+ 
+  //  // try to update position 
+  //  new_pos[id_dir] =   particles.at(particle_id).pos[id_dir] 
+  //                    + particles.at(particle_id).vel[id_dir]*dt;
+
+  //  // Did the particle exit the cell? Check on the vector XYZcorners
+  //  side_1 = 2*id_dir;
+  //  side_2 = 2*id_dir + 1;
+  //  particle_crossed_wall_1 = (new_pos[id_dir] < XYZcorners[side_1]);
+  //  particle_crossed_wall_2 = (new_pos[id_dir] > XYZcorners[side_2]);
+
+  //  if( particle_crossed_wall_1 || particle_crossed_wall_2 ) { // hey, it crossed some wall!
+
+  //    std::cout << "Some particle crossed the borders!" << std::endl;
+
+  //    // Is it a special direction?
+  //    if( 
+  //        // 1D solution and I'm processing y or z axis
+  //           ( !strcmp(sol_type, "1D") && ((id_dir == 1) || (id_dir == 2)) )
+  //        // .. or 2D solution and I'm processing z axis
+  //        || ( !strcmp(sol_type, "2D") && id_dir == 2)          
+  //      ) {
+
+  //      std::cout << "Solution is 1D\n";
+
+  //      new_pos[id_dir] =  XYZcorners[side_1] 
+  //                       + fmod(new_pos[id_dir] - XYZcorners[side_2], get_side(id_dir));
+  //      continue;
+
+  //    } else {
+  //      std::cout << "Some unrecognized geometry was selected.." << std::endl;
+  //    }
+  //  }
+  // 
+  //}
+
+
+  std::cout << "DB: " << particles.at(particle_id).pos[0] <<
+                  " " << particles.at(particle_id).pos[1] <<
+                  " " << particles.at(particle_id).pos[2] << std::endl;
 
   std::cout << "DB: " << new_pos[0] << " " << new_pos[1] << " " << new_pos[2] << std::endl;
   std::cout << "\n";
