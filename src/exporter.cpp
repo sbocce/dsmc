@@ -3,6 +3,7 @@
 #include <sstream>
 
 #include "exporter.h"
+#include "lodepng.h"
 
 exporter::exporter(mesh* p_msh) : p_mesh(p_msh) { }
 
@@ -102,3 +103,56 @@ void exporter::export_partpercell_VTK(const char* filename)
   // Closing VTK file
   fileVTK.close();
 } 
+
+// ---------------------------------------------
+
+void exporter::plot_particles_PNG(const char* filename)
+{
+  // Plots the particles on a PNG image, using lodepng
+
+  // Parameters for image
+  const unsigned w = 51; // width  [pixel]
+  const unsigned h = 51; // height [pixel]
+  const unsigned b = 10;  // border [pixel]
+ 
+  const unsigned w_nob = w - 2*b; // width without borders
+  const unsigned h_nob = h - 2*b; // width without borders
+  
+  // Create image vector
+  std::vector<unsigned char> image;
+  image.resize(w*h*4);
+
+  // Fill the image
+  // there are 4 parameters for each pixel. The first one is upper-left and the second one
+  // is at its right.
+  // NEED FIRST OF ALL A FUNCTION THAT MAPS x_pixel, y_pixel to a position along the vector "image"
+ 
+  // pos_absolute = x_pixel + y_pixel*h // MAYBE!!!!!!!!!!!!! <<<<<-------------------------------------
+  // pos_absolute = x_pixel + y_pixel*h // MAYBE!!!!!!!!!!!!! <<<<<-------------------------------------
+  // pos_absolute = x_pixel + y_pixel*h // MAYBE!!!!!!!!!!!!! <<<<<-------------------------------------
+  // pos_absolute = x_pixel + y_pixel*h // MAYBE!!!!!!!!!!!!! <<<<<-------------------------------------
+  // pos_absolute = x_pixel + y_pixel*h // MAYBE!!!!!!!!!!!!! <<<<<-------------------------------------
+  // pos_absolute = x_pixel + y_pixel*h // MAYBE!!!!!!!!!!!!! <<<<<-------------------------------------
+ 
+  image[0] = 0;
+  image[1] = 255;
+  image[2] = 0;
+  image[3] = 255;
+
+  image[8] = 0;
+  image[9] = 255;
+  image[10] = 0;
+  image[11] = 255;
+
+
+  // Encode and save the image
+  std::vector<unsigned char> buffer;
+
+  unsigned error = lodepng::encode(buffer, image, w, h);
+  if(error) {
+    std::cout << "encoder error " << error << ": "<< lodepng_error_text(error) << std::endl;
+  }
+
+  lodepng::save_file(buffer, filename);
+
+}

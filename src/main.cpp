@@ -33,6 +33,7 @@ int main(int argc, char *argv[])
   Slvr.translation_step();
   
   Exptr.export_partpercell_VTK("../output/VTK_partpercell.vtk"); // for debugging reasons
+  Exptr.plot_particles_PNG("../output/provaoutput.png");
 
   return 0;
 }
