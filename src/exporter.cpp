@@ -121,7 +121,6 @@ void exporter::plot_particles_PNG(const char* filename)
   double x_min, x_max, y_min, y_max, z_min, z_max; // domain limits
   p_mesh->get_domain_box(x_min, x_max, y_min, y_max, z_min, z_max);
   
-
   // Parameters for image
   const unsigned w = 510; // width  [pixel]
   const unsigned h = round(w*(y_max - y_min)/(x_max - x_min)); // height [pixel]
