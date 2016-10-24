@@ -31,6 +31,21 @@ void mesh::set_domain_box(double x1, double x2, double y1, double y2, double z1,
 
 //------------------------------------------------------
 
+void mesh::get_domain_box(double x1, double x2, double y1, double y2, double z1, double z2)
+{
+  // Set the limits of the outer box
+  x1 = this->x_min;
+  x2 = this->x_max;
+  y1 = this->y_min;
+  y2 = this->y_max;
+  z1 = this->z_min;
+  z2 = this->z_max;
+
+  std::cout << "DB: dommm: " << x1 << " " << x2 << " " << y1 << " " << y2 << std::endl;
+}
+
+//------------------------------------------------------
+
 void mesh::create()
 {
   std::cout << "Creating cells...\n";

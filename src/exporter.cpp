@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <cmath>
 
 #include "exporter.h"
 #include "lodepng.h"
@@ -112,7 +113,7 @@ void exporter::plot_particles_PNG(const char* filename)
 
   // Parameters for image
   const unsigned w = 51; // width  [pixel]
-  const unsigned h = 51; // height [pixel]
+  const unsigned h = 40; // height [pixel]
   const unsigned b = 10;  // border [pixel]
  
   const unsigned w_nob = w - 2*b; // width without borders
@@ -123,27 +124,79 @@ void exporter::plot_particles_PNG(const char* filename)
   image.resize(w*h*4);
 
   // Fill the image
-  // there are 4 parameters for each pixel. The first one is upper-left and the second one
-  // is at its right.
-  // NEED FIRST OF ALL A FUNCTION THAT MAPS x_pixel, y_pixel to a position along the vector "image"
- 
-  // pos_absolute = x_pixel + y_pixel*h // MAYBE!!!!!!!!!!!!! <<<<<-------------------------------------
-  // pos_absolute = x_pixel + y_pixel*h // MAYBE!!!!!!!!!!!!! <<<<<-------------------------------------
-  // pos_absolute = x_pixel + y_pixel*h // MAYBE!!!!!!!!!!!!! <<<<<-------------------------------------
-  // pos_absolute = x_pixel + y_pixel*h // MAYBE!!!!!!!!!!!!! <<<<<-------------------------------------
-  // pos_absolute = x_pixel + y_pixel*h // MAYBE!!!!!!!!!!!!! <<<<<-------------------------------------
-  // pos_absolute = x_pixel + y_pixel*h // MAYBE!!!!!!!!!!!!! <<<<<-------------------------------------
- 
-  image[0] = 0;
-  image[1] = 255;
-  image[2] = 0;
-  image[3] = 255;
+  unsigned pos;
 
-  image[8] = 0;
-  image[9] = 255;
-  image[10] = 0;
-  image[11] = 255;
+  // Plot horizontal line
+  for(int xPix = 10; xPix < 50; ++xPix) {
+    pos = 4*(xPix + 0*w);   // where 0 is yPix
+    image[pos+0] = 0;   // R
+    image[pos+1] = 255;   // G
+    image[pos+2] = 0;   // B
+    image[pos+3] = 255; // alpha
+  }
 
+  double x_min, x_max, y_min, y_max, z_min, z_max; // domain limits
+  double X1, X2, Y1, Y2, Z1, Z2;       // working variables
+  size_t X1p, X2p, Y1p, Y2p, Z1p, Z2p; // working variables
+
+  // First of all, find the domain limits
+  p_mesh->get_domain_box(x_min, x_max, y_min, y_max, z_min, z_max);
+
+  // For each cell, draw its borders!
+  for(size_t id_c = 0; id_c < p_mesh->cells.size(); ++id_c) {
+    // 1) convert the corners positions (double) to sizes in pixel (int)
+    // 2) upper-left corresponds to point (0,0) in the image!
+    // 3) draw each side of each cell
+
+    X1 = p_mesh->cells.at(id_c).XYZcorners[0];
+    X2 = p_mesh->cells.at(id_c).XYZcorners[1];
+    Y1 = p_mesh->cells.at(id_c).XYZcorners[2];
+    Y2 = p_mesh->cells.at(id_c).XYZcorners[3];
+    Z2 = p_mesh->cells.at(id_c).XYZcorners[4];
+    Z2 = p_mesh->cells.at(id_c).XYZcorners[5];
+
+    X1p = round((X1 - x_min)/(x_max - x_min)*w_nob) + b;
+    X2p = round((X2 - x_min)/(x_max - x_min)*w_nob) + b;
+    Y1p = round((Y1 - y_min)/(y_max - y_min)*w_nob) + b;
+    Y2p = round((Y2 - y_min)/(y_max - y_min)*w_nob) + b; // check the scaling!!!!
+
+// DEBUG
+    double X1m = (X1 - x_min)/(x_max - x_min)*w_nob + b;
+    double X2m = (X2 - x_min)/(x_max - x_min)*w_nob + b;
+    double Y1m = (Y1 - y_min)/(y_max - y_min)*w_nob + b;
+    double Y2m = (Y2 - y_min)/(y_max - y_min)*w_nob + b; // check the scaling!!!!
+
+//    Z1p = round((Z1 - z_min)/(z_max - z_min)*h_nob) + b;
+//    Z2p = round((Z2 - z_min)/(z_max - z_min)*h_nob) + b;
+
+    // Now plot each line!!
+    for(int pp = 0; pp < X2p-X1p; ++pp) { // horizontal lines
+     
+std::cout << x_min << " " << x_max << " " << y_min << " " << y_max << " " << std::endl;
+std::cout << X1p << " " << X2p << " " << Y1p << " " << Y2p << " " << pp << std::endl; 
+std::cout << X1m << " " << X2m << " " << Y1m << " " << Y2m << " " << std::endl; 
+std::cout << X1 << " " << X2 << " " << Y1 << " " << Y2 << " " <<  std::endl; 
+
+      pos = 4*(pp + Y1p*w);
+      image[pos+0] = 0;   // R
+      image[pos+1] = 255;   // G
+      image[pos+2] = 0;   // B
+      image[pos+3] = 255; // alpha     
+
+      pos = 4*(pp + Y2p*w);
+      image[pos+0] = 0;   // R
+      image[pos+1] = 255;   // G
+      image[pos+2] = 0;   // B
+      image[pos+3] = 255; // alpha     
+
+    }
+
+
+    // ------   song time   -------------------------------------------
+    // Port Royal! Black widow on the seeeeeea
+    // Port Royal! Whooo ho ho hooo hooo ho hooo hoooo ho hoooooooooo
+    // ----------------------------------------------------------------
+  }
 
   // Encode and save the image
   std::vector<unsigned char> buffer;

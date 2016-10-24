@@ -8,6 +8,12 @@ This will first of all compile lodepng, then it will go into src and compile the
 The executable is placed into the 'bin' directory.
 
 
+**NOW DOING..**
+
+Currently working exporter::plot particles PNG function. I have some issues getting the domain
+limits. I've just implemented the function mesh::get domain box (or similar) -> check that it's 
+working!
+
 **COMMENTS AND USELESS STUFF**
 
 Ok, for now the advection of particles is embrionally implemented in 1D.
