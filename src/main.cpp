@@ -29,8 +29,6 @@ int main(int argc, char *argv[])
 
   // 4) Let's make some steps..
   Slvr.translation_step();
-  std::cout << "-----------------------------------------\n";
-  Slvr.translation_step();
   
   Exptr.export_partpercell_VTK("../output/VTK_partpercell.vtk"); // for debugging reasons
   Exptr.plot_particles_PNG("../output/provaoutput.png");
