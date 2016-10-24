@@ -111,10 +111,25 @@ void exporter::plot_particles_PNG(const char* filename)
 {
   // Plots the particles on a PNG image, using lodepng
 
+  // Define some colors..
+  int red[4]   = {255, 0, 0, 255};
+  int green[4] = {0, 255, 0, 255};
+  int blue[4]  = {0, 0, 255, 255};
+  int color_now[4] = {0, 0, 0, 255};
+
+  // First of all, find the domain limits
+  double x_min, x_max, y_min, y_max, z_min, z_max; // domain limits
+  p_mesh->get_domain_box(x_min, x_max, y_min, y_max, z_min, z_max);
+  
+
   // Parameters for image
-  const unsigned w = 51; // width  [pixel]
-  const unsigned h = 40; // height [pixel]
+  const unsigned w = 510; // width  [pixel]
+  const unsigned h = round(w*(y_max - y_min)/(x_max - x_min)); // height [pixel]
   const unsigned b = 10;  // border [pixel]
+  if(b < 1){
+    std::cerr << "ATTENTION!!!!! BORDER b MUST BE BIGGER THAN 1, OTHERWISE SOME ERROR MIGHT "
+              << "APPEAR WHEN PLOTTING BORDERS WITH LINEWIGTH 2 !!!!" << std::endl;
+  }
  
   const unsigned w_nob = w - 2*b; // width without borders
   const unsigned h_nob = h - 2*b; // width without borders
@@ -126,21 +141,10 @@ void exporter::plot_particles_PNG(const char* filename)
   // Fill the image
   unsigned pos;
 
-  // Plot horizontal line
-  for(int xPix = 10; xPix < 50; ++xPix) {
-    pos = 4*(xPix + 0*w);   // where 0 is yPix
-    image[pos+0] = 0;   // R
-    image[pos+1] = 255;   // G
-    image[pos+2] = 0;   // B
-    image[pos+3] = 255; // alpha
-  }
+  double X1, X2, Y1, Y2, Z1, Z2, Xpart, Ypart, Zpart; // working variables
+  size_t X1p, X2p, Y1p, Y2p, Z1p, Z2p, Xpp, Ypp, Zpp; // working variables
 
-  double x_min, x_max, y_min, y_max, z_min, z_max; // domain limits
-  double X1, X2, Y1, Y2, Z1, Z2;       // working variables
-  size_t X1p, X2p, Y1p, Y2p, Z1p, Z2p; // working variables
-
-  // First of all, find the domain limits
-  p_mesh->get_domain_box(x_min, x_max, y_min, y_max, z_min, z_max);
+  cell* p_cell;
 
   // For each cell, draw its borders!
   for(size_t id_c = 0; id_c < p_mesh->cells.size(); ++id_c) {
@@ -148,49 +152,62 @@ void exporter::plot_particles_PNG(const char* filename)
     // 2) upper-left corresponds to point (0,0) in the image!
     // 3) draw each side of each cell
 
-    X1 = p_mesh->cells.at(id_c).XYZcorners[0];
-    X2 = p_mesh->cells.at(id_c).XYZcorners[1];
-    Y1 = p_mesh->cells.at(id_c).XYZcorners[2];
-    Y2 = p_mesh->cells.at(id_c).XYZcorners[3];
-    Z2 = p_mesh->cells.at(id_c).XYZcorners[4];
-    Z2 = p_mesh->cells.at(id_c).XYZcorners[5];
+    p_cell = &(p_mesh->cells.at(id_c));
+
+    X1 = p_cell->XYZcorners[0];    X2 = p_cell->XYZcorners[1];
+    Y1 = p_cell->XYZcorners[2];    Y2 = p_cell->XYZcorners[3];
+    Z2 = p_cell->XYZcorners[4];    Z2 = p_cell->XYZcorners[5];
 
     X1p = round((X1 - x_min)/(x_max - x_min)*w_nob) + b;
     X2p = round((X2 - x_min)/(x_max - x_min)*w_nob) + b;
-    Y1p = round((Y1 - y_min)/(y_max - y_min)*w_nob) + b;
-    Y2p = round((Y2 - y_min)/(y_max - y_min)*w_nob) + b; // check the scaling!!!!
-
-// DEBUG
-    double X1m = (X1 - x_min)/(x_max - x_min)*w_nob + b;
-    double X2m = (X2 - x_min)/(x_max - x_min)*w_nob + b;
-    double Y1m = (Y1 - y_min)/(y_max - y_min)*w_nob + b;
-    double Y2m = (Y2 - y_min)/(y_max - y_min)*w_nob + b; // check the scaling!!!!
-
+    Y1p = round((Y1 - y_min)/(y_max - y_min)*h_nob) + b;
+    Y2p = round((Y2 - y_min)/(y_max - y_min)*h_nob) + b; // check the scaling!!!!
 //    Z1p = round((Z1 - z_min)/(z_max - z_min)*h_nob) + b;
 //    Z2p = round((Z2 - z_min)/(z_max - z_min)*h_nob) + b;
+ 
+    // Correcting Y so that it starts from the bottom!
+    Y1p = h - Y1p;
+    Y2p = h - Y2p;
 
     // Now plot each line!!
-    for(int pp = 0; pp < X2p-X1p; ++pp) { // horizontal lines
-     
-std::cout << x_min << " " << x_max << " " << y_min << " " << y_max << " " << std::endl;
-std::cout << X1p << " " << X2p << " " << Y1p << " " << Y2p << " " << pp << std::endl; 
-std::cout << X1m << " " << X2m << " " << Y1m << " " << Y2m << " " << std::endl; 
-std::cout << X1 << " " << X2 << " " << Y1 << " " << Y2 << " " <<  std::endl; 
-
-      pos = 4*(pp + Y1p*w);
-      image[pos+0] = 0;   // R
-      image[pos+1] = 255;   // G
-      image[pos+2] = 0;   // B
-      image[pos+3] = 255; // alpha     
-
-      pos = 4*(pp + Y2p*w);
-      image[pos+0] = 0;   // R
-      image[pos+1] = 255;   // G
-      image[pos+2] = 0;   // B
-      image[pos+3] = 255; // alpha     
-
+    for(int pp = X1p; pp < X2p; ++pp) { // horizontal lines
+      write_pixel(&image[0], pp, Y1p, w, green);
+      write_pixel(&image[0], pp, Y1p+1, w, green); // linewidth 2
+      write_pixel(&image[0], pp, Y2p, w, green);
+      write_pixel(&image[0], pp, Y2p-1, w, green); // linewidth 2
     }
 
+    for(int pp = Y2p; pp < Y1p; ++pp) { // vertical lines. Recall Y is inverted!
+      write_pixel(&image[0], X1p, pp, w, green);
+      write_pixel(&image[0], X1p+1, pp, w, green);
+      write_pixel(&image[0], X2p, pp, w, green);
+      write_pixel(&image[0], X2p+1, pp, w, green);
+    }
+
+    // The grid is plotted. Now plot the particles!
+    for(int id_p = 0; id_p < p_cell->particles.size(); ++id_p) {
+      Xpart = p_cell->particles.at(id_p).pos[0];
+      Ypart = p_cell->particles.at(id_p).pos[1];
+      Zpart = p_cell->particles.at(id_p).pos[2];
+
+      Xpp = round((Xpart - x_min)/(x_max - x_min)*w_nob) + b;
+      Ypp = round((Ypart - y_min)/(y_max - y_min)*h_nob) + b; // check the scaling!!!!
+      // Zpp = ...
+      // Invert the Y
+      Ypp = h - Ypp;
+
+      if(id_c%2 == 0) {
+        color_now[0] = red[0]; color_now[1] = red[1]; color_now[2] = red[2]; color_now[3] = red[3];
+      } else {
+        color_now[0] = blue[0]; color_now[1] = blue[1]; color_now[2] = blue[2]; color_now[3] = blue[3];
+      }
+      
+      write_pixel(&image[0], Xpp, Ypp, w,   color_now); // linewidth 2
+      write_pixel(&image[0], Xpp+1, Ypp, w, color_now); // linewidth 2
+      write_pixel(&image[0], Xpp-1, Ypp, w, color_now); // linewidth 2
+      write_pixel(&image[0], Xpp, Ypp+1, w, color_now); // linewidth 2
+      write_pixel(&image[0], Xpp, Ypp-1, w, color_now); // linewidth 2
+    }
 
     // ------   song time   -------------------------------------------
     // Port Royal! Black widow on the seeeeeea
@@ -208,4 +225,16 @@ std::cout << X1 << " " << X2 << " " << Y1 << " " << Y2 << " " <<  std::endl;
 
   lodepng::save_file(buffer, filename);
 
+}
+
+// ---------------------------------------------
+
+void exporter::write_pixel(unsigned char* img, int x, int y, int w, int RGBA[])
+{
+  // Just a function to make everything a little bit neater
+   int pos = 4*(x + y*w);
+   img[pos+0] = RGBA[0];   // R
+   img[pos+1] = RGBA[1];   // G
+   img[pos+2] = RGBA[2];   // B
+   img[pos+3] = RGBA[3];   // alpha  
 }

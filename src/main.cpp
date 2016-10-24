@@ -29,9 +29,59 @@ int main(int argc, char *argv[])
 
   // 4) Let's make some steps..
   Slvr.translation_step();
-  
+  Exptr.plot_particles_PNG("../output/provaoutput001.png");
+  Slvr.translation_step();
+  Exptr.plot_particles_PNG("../output/provaoutput002.png");
+  Slvr.translation_step();
+  Exptr.plot_particles_PNG("../output/provaoutput003.png");
+  Slvr.translation_step();
+  Exptr.plot_particles_PNG("../output/provaoutput004.png");
+  Slvr.translation_step();
+  Exptr.plot_particles_PNG("../output/provaoutput005.png");
+  Slvr.translation_step();
+  Exptr.plot_particles_PNG("../output/provaoutput006.png");
+  Slvr.translation_step();
+  Exptr.plot_particles_PNG("../output/provaoutput007.png");
+  Slvr.translation_step();
+  Exptr.plot_particles_PNG("../output/provaoutput008.png");
+  Slvr.translation_step();
+  Exptr.plot_particles_PNG("../output/provaoutput009.png");
+  Slvr.translation_step();
+  Exptr.plot_particles_PNG("../output/provaoutput010.png");
+  Slvr.translation_step();
+  Exptr.plot_particles_PNG("../output/provaoutput011.png");
+  Slvr.translation_step();
+  Exptr.plot_particles_PNG("../output/provaoutput012.png");
+  Slvr.translation_step();
+  Exptr.plot_particles_PNG("../output/provaoutput013.png");
+  Slvr.translation_step();
+  Exptr.plot_particles_PNG("../output/provaoutput014.png");
+  Slvr.translation_step();
+  Exptr.plot_particles_PNG("../output/provaoutput015.png");
+  Slvr.translation_step();
+  Exptr.plot_particles_PNG("../output/provaoutput016.png");
+  Slvr.translation_step();
+  Exptr.plot_particles_PNG("../output/provaoutput017.png");
+  Slvr.translation_step();
+  Exptr.plot_particles_PNG("../output/provaoutput017.png");
+  Slvr.translation_step();
+  Exptr.plot_particles_PNG("../output/provaoutput018.png");
+  Slvr.translation_step();
+  Exptr.plot_particles_PNG("../output/provaoutput019.png");
+  Slvr.translation_step();
+  Exptr.plot_particles_PNG("../output/provaoutput020.png");
+  Slvr.translation_step();
+  Exptr.plot_particles_PNG("../output/provaoutput021.png");
+  Slvr.translation_step();
+  Exptr.plot_particles_PNG("../output/provaoutput022.png");
+  Slvr.translation_step();
+  Exptr.plot_particles_PNG("../output/provaoutput023.png");
+  Slvr.translation_step();
+  Exptr.plot_particles_PNG("../output/provaoutput024.png");
+  Slvr.translation_step();
+  Exptr.plot_particles_PNG("../output/provaoutput025.png");
+
   Exptr.export_partpercell_VTK("../output/VTK_partpercell.vtk"); // for debugging reasons
-  Exptr.plot_particles_PNG("../output/provaoutput.png");
 
   return 0;
 }
