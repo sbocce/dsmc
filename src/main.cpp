@@ -17,6 +17,7 @@ int main(int argc, char *argv[])
   Msh.set_n_cells(5);
   Msh.set_domain_box(-1.5, 5, 0, 1, -1.5, 0.5);   // Set outer compuational domain
   Msh.create();
+  Msh.impose_BCs();
 
   // 2) Create exporter object
   exporter Exptr(&Msh);

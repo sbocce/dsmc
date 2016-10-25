@@ -10,13 +10,8 @@ The executable is placed into the 'bin' directory.
 
 **NOW DOING..**
 
-Implementing the bouncing on walls.
-Need to:
-
-1) create function "set face type" and actually insert it somewhere in the code, during the 
-   mesh creation
-
-2) create function "get face type"
+I've implemented the walls.... but they don't work.
+NICE NEWS: we've got a segfault for velocity of 100m/s. Debug it and find out what's going on!
 
 **COMMENTS AND USELESS STUFF**
 

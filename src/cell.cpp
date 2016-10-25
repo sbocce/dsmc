@@ -3,6 +3,20 @@
 #include <math.h>
 
 #include "cell.h"
+#include "constants.h"
+
+// --------------------------------------------
+cell::cell() // constructor
+{
+  // Initializes all the faces of the cell to 'n', that is 'neighbor'.
+  // The mesh class then can change some of them, to impose BCs such as walls.
+  face_type[0] = 'n';
+  face_type[1] = 'n';
+  face_type[2] = 'n';
+  face_type[3] = 'n';
+  face_type[4] = 'n';
+  face_type[5] = 'n';
+}
 
 // --------------------------------------------
 
@@ -62,6 +76,47 @@ double cell::get_volume()
 
 // --------------------------------------------
 
+void cell::set_face_type(size_t face_id, char face_type) 
+{
+  this->face_type[face_id] = face_type;
+}
+
+// --------------------------------------------
+
+void cell::set_face_T(size_t face_id, double T) 
+{
+  this->face_T[face_id] = T;
+}
+
+// --------------------------------------------
+
+void cell::set_face_a(size_t face_id, double a) 
+{
+  this->face_a[face_id] = a;
+}
+// --------------------------------------------
+
+char cell::get_face_type(size_t face_id)
+{
+  return this->face_type[face_id];
+}
+
+// --------------------------------------------
+
+double cell::get_face_T(size_t face_id)
+{
+  return this->face_T[face_id];
+}
+
+// --------------------------------------------
+
+double cell::get_face_a(size_t face_id)
+{
+  return this->face_a[face_id];
+}
+
+// --------------------------------------------
+
 void cell::advect_particle(size_t particle_id, double dt, const char* sol_type)
 {
   // --------------------------------------------------------------------------
@@ -87,13 +142,16 @@ void cell::advect_particle(size_t particle_id, double dt, const char* sol_type)
   //            - Free face:    move particle to the neighboring cell
   //            - Outflow face: just remove the particle
   //            - Solid wall:   re-emit the particle inside the cell with a velocity 
-  //                            given by temperature and accommodation factor
+  //                            given by temperature and accommodation coefficient 
   // --------------------------------------------------------------------------
 
-  double new_pos[3];
-  bool   particle_crossed_face_A, particle_crossed_face_B; // working variables
-  size_t side_1, side_2, face_id; // working variables
-  char   f_type_now;
+  double    new_pos[3];
+  bool      particle_crossed_face_A, particle_crossed_face_B; // working variables
+  size_t    side_1, side_2, id_face; // working variables
+  char      f_type_now;
+  double    new_u_mod, alpha_rand, beta_rand;      // working variables
+  int       new_direct;
+  particle* p_part = &(particles.at(particle_id));
 
   // ------  1D case  ------
   // It is simplified!
@@ -105,9 +163,9 @@ void cell::advect_particle(size_t particle_id, double dt, const char* sol_type)
   // 
   if( !strcmp(sol_type, "1D")) {
 
-    new_pos[0] =   particles.at(particle_id).pos[0] + particles.at(particle_id).vel[0]*dt;
-    new_pos[1] =   particles.at(particle_id).pos[1] + particles.at(particle_id).vel[1]*dt;
-    new_pos[2] =   particles.at(particle_id).pos[2] + particles.at(particle_id).vel[2]*dt;
+    new_pos[0] = p_part->pos[0] + p_part->vel[0]*dt;
+    new_pos[1] = p_part->pos[1] + p_part->vel[1]*dt;
+    new_pos[2] = p_part->pos[2] + p_part->vel[2]*dt;
 
     // Apply module function if particle exited from Y cells or Z cells
 
@@ -134,22 +192,50 @@ void cell::advect_particle(size_t particle_id, double dt, const char* sol_type)
     particle_crossed_face_B = (new_pos[0] > XYZcorners[1]);
     if(particle_crossed_face_B || particle_crossed_face_A) { // Some face was crossed
       // find which one was crossed
-      (particle_crossed_face_A)? (id_face = 0) : (id_face = 1); // ternary operator..
+//      (particle_crossed_face_A)? (id_face = 0) : (id_face = 1); // ternary operator..
+      if(particle_crossed_face_A) {
+        id_face    = 0;
+        new_direct = 1; 
+      } else {
+        id_face    = 1;
+        new_direct = -1;
+      }
       f_type_now = get_face_type(id_face); // get face type
       // treat accordingly to the face type
-      if(strcmp()) {// open face: just let it go FOR NOW <<<<------------------------------------ FOR NOW
-      
-      } else if(strcmp()) { // reflective face 
+      if(f_type_now == 'n') {// neighbor: just let it go FOR NOW <<<<---------------- FOR NOW
+        std::cout << "Particle from cell " << get_id() << " crossed neighboring surface!" << std::endl;
+std::cout << " 1) Implement add_particle (and add it to next cell)\n";
+std::cout << " 2) Implement pop_particle (and pop the particle from here)\n";
+      } else if(f_type_now == 'w') { // solid wall
+        // Particles hitting the wall are assigned the position of the wall and a new velocity,
+        // that is the opposite of the previous one if the accomodation coefficient is alpha = 0 or 
+        // random and according to the wall temperature if alpha \neq 0
 
+        // PARTICLE NEW POSITION
+        new_pos[0] = XYZcorners[id_face];  // particle is stopped at the wall position. It will
+                                           // move again later
+        // PARTICLE NEW VELOCITY (accommodation factor = 1 for now..)
+        new_u_mod  = sqrt(kB*get_face_T(id_face)/p_part->get_mass());
+        alpha_rand = pi*rand();
+        beta_rand  = 2*pi*rand(); // 2*pi in the YZ plane! 
+
+        p_part->vel[0] = new_u_mod*sin(alpha_rand);
+        p_part->vel[1] = new_u_mod*cos(alpha_rand)*sin(beta_rand);
+        p_part->vel[2] = new_u_mod*cos(alpha_rand)*cos(beta_rand);
+
+        std::cout << "Particle from cell " << get_id() << " hit a wall!" << std::endl;
+   std::cout << "NEW VELOCITY: " << p_part->vel[0] << " " << p_part->vel[1] << " " << p_part->vel[2] << std::endl;
+
+std::cout << " IMPLEMENT MEEEEEEEEEEEEEE" << std::endl;
       }
     }
 
     // FOR NOW I KEEP IT FREE!!!!
 
     // Adjourn particle position
-    particles.at(particle_id).pos[0] = new_pos[0];
-    particles.at(particle_id).pos[1] = new_pos[1];
-    particles.at(particle_id).pos[2] = new_pos[2];
+    p_part->pos[0] = new_pos[0];
+    p_part->pos[1] = new_pos[1];
+    p_part->pos[2] = new_pos[2];
 
   } else {
     std::cout << "Solution for domain type '" << sol_type << "' not implemented yet!\n";  

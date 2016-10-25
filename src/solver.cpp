@@ -24,7 +24,7 @@ std::cout << "Solver: reading input file..." << std::endl;
 
 void solver::seed_particles()
 {
-  int PARTICLES_PER_CELL = 12; // <<<<<<<<<<<<<<<<<<<<<<<<<------------------  !!!!!!
+  int PARTICLES_PER_CELL = 50; // <<<<<<<<<<<<<<<<<<<<<<<<<------------------  !!!!!!
   double VEL_MAX_component = 100;
 
   // For each cell, fill it properly. "id_c" stands for "id_cell". "id_p" for "id_particle"
@@ -52,7 +52,9 @@ void solver::seed_particles()
 
       part_now.pos[0] = x;    part_now.pos[1] = y;    part_now.pos[2] = z;
       part_now.vel[0] = u;    part_now.vel[1] = v;    part_now.vel[2] = w;
-  
+
+      part_now.set_mass(5.31e-20); // Mass of O2 molecule..
+
       p_cell_now->particles.push_back(part_now);
     }
   }

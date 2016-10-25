@@ -54,15 +54,15 @@ void mesh::create()
   // Creates cells with some law.. Here it creates them on a straight line
   cell* p_cell_now;  // Pointer to cells
 
-  for(size_t ii = 0; ii < get_n_cells(); ++ii) {
-    p_cell_now = &cells.at(ii);   // Set pointer to current cell (I want to fill it!)
+  for(size_t id_c = 0; id_c < get_n_cells(); ++id_c) {
+    p_cell_now = &cells.at(id_c);   // Set pointer to current cell (I want to fill it!)
 
     // Set cell ID
-    p_cell_now->set_id(ii);
+    p_cell_now->set_id(id_c);
 
     // Setting X of corners
-    p_cell_now->XYZcorners[0] = x_min + (ii) * (x_max - x_min)/get_n_cells();
-    p_cell_now->XYZcorners[1] = x_min + (ii + 1) * (x_max - x_min)/get_n_cells();
+    p_cell_now->XYZcorners[0] = x_min + (id_c) * (x_max - x_min)/get_n_cells();
+    p_cell_now->XYZcorners[1] = x_min + (id_c + 1) * (x_max - x_min)/get_n_cells();
     // Setting Y of corners
     p_cell_now->XYZcorners[2] = y_min;  // ONLY OK FOR 1D SIMULATIONS!
     p_cell_now->XYZcorners[3] = y_max;  // ONLY OK FOR 1D SIMULATIONS!
@@ -72,8 +72,40 @@ void mesh::create()
 
     // Compute sides of each cell
     p_cell_now->compute_sides();
+
+    // Set neighbors: assign to each cell (except the first and the last), their neighbors.
+    // The neighbors matrix is made of three vectors: neighbors[0], [1], [2]
+    // each of them contains POINTERS to the neighboring cells.
+
+    // First of all resize:
+    p_cell_now->neighbors.resize(3);       // X, Y and Z neighbors
+    p_cell_now->neighbors.at(0).resize(2); // on X we have 2 neighbors
+    p_cell_now->neighbors.at(1).resize(2); // on Y we have 2 neighbors
+    p_cell_now->neighbors.at(2).resize(2); // on Z also, we have 2 neighbors
+
+    if(id_c > 0) {
+      p_cell_now->neighbors[0].at(0) = &(cells.at(id_c-1)); // X, left neighbor
+    }
+    if(id_c < get_n_cells() - 1) {
+      p_cell_now->neighbors[0].at(1) = &(cells.at(id_c+1)); // X, right neighbor
+    }
+    
   }
 
 }
 
+//------------------------------------------------------
 
+void mesh::impose_BCs()
+{
+  // This function somehow knows which BCs to impose. For now (1D case) I hard-code it.
+
+  // First cell
+  cells.at(0).set_face_type(0, 'w');
+  cells.at(0).set_face_T(0, 1000);
+  cells.at(0).set_face_a(0, 0);
+  // Last cell
+  cells.at(get_n_cells()-1).set_face_type(1, 'w');
+  cells.at(get_n_cells()-1).set_face_T(1, 273.15);
+  cells.at(get_n_cells()-1).set_face_a(1, 1);
+}

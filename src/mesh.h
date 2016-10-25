@@ -13,8 +13,8 @@ class mesh {
     int  get_n_cells();
     void set_domain_box(double x1, double x2, double y1, double y2, double z1, double z2);
     void get_domain_box(double& x1, double& x2, double& y1, double& y2, double& z1, double& z2);
+    void impose_BCs();
     void create();
-    void compute_cells_neighbors(cell* p_cell);
   
     std::vector< cell > cells;
     double x_min, x_max, y_min, y_max, z_min, z_max; // Limits of computational domain
