@@ -46,9 +46,9 @@ void solver::seed_particles()
       z = sample_uniform_dist(p_cell_now->XYZcorners[4],
                               p_cell_now->XYZcorners[5]);
 
-      u = sample_uniform_dist(0, VEL_MAX_component);
-      v = sample_uniform_dist(0, VEL_MAX_component);
-      w = sample_uniform_dist(0, VEL_MAX_component);
+      u = sample_uniform_dist(-VEL_MAX_component, VEL_MAX_component);
+      v = sample_uniform_dist(-VEL_MAX_component, VEL_MAX_component);
+      w = sample_uniform_dist(-VEL_MAX_component, VEL_MAX_component);
 
       part_now.pos[0] = x;    part_now.pos[1] = y;    part_now.pos[2] = z;
       part_now.vel[0] = u;    part_now.vel[1] = v;    part_now.vel[2] = w;

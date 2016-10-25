@@ -92,9 +92,8 @@ void cell::advect_particle(size_t particle_id, double dt, const char* sol_type)
 
   double new_pos[3];
   bool   particle_crossed_face_A, particle_crossed_face_B; // working variables
-  size_t side_1, side_2; // working variables
-
-std::cout << "DB: Advecting particle " << particle_id << std::endl;
+  size_t side_1, side_2, face_id; // working variables
+  char   f_type_now;
 
   // ------  1D case  ------
   // It is simplified!
@@ -131,6 +130,20 @@ std::cout << "DB: Advecting particle " << particle_id << std::endl;
     }
 
     // --- X direction ---
+    particle_crossed_face_A = (new_pos[0] < XYZcorners[0]);
+    particle_crossed_face_B = (new_pos[0] > XYZcorners[1]);
+    if(particle_crossed_face_B || particle_crossed_face_A) { // Some face was crossed
+      // find which one was crossed
+      (particle_crossed_face_A)? (id_face = 0) : (id_face = 1); // ternary operator..
+      f_type_now = get_face_type(id_face); // get face type
+      // treat accordingly to the face type
+      if(strcmp()) {// open face: just let it go FOR NOW <<<<------------------------------------ FOR NOW
+      
+      } else if(strcmp()) { // reflective face 
+
+      }
+    }
+
     // FOR NOW I KEEP IT FREE!!!!
 
     // Adjourn particle position
@@ -141,9 +154,6 @@ std::cout << "DB: Advecting particle " << particle_id << std::endl;
   } else {
     std::cout << "Solution for domain type '" << sol_type << "' not implemented yet!\n";  
   }
-
-  std::cout << "CELL " << this->id << "  " << particle_id << "  "
-            << "  " << new_pos[0] << "  " << new_pos[1] << "  " << new_pos[2] << std::endl;
 
 
   //// -----------------------------------------
@@ -187,12 +197,6 @@ std::cout << "DB: Advecting particle " << particle_id << std::endl;
   //}
 
 
-  std::cout << "DB: " << particles.at(particle_id).pos[0] <<
-                  " " << particles.at(particle_id).pos[1] <<
-                  " " << particles.at(particle_id).pos[2] << std::endl;
-
-  std::cout << "DB: " << new_pos[0] << " " << new_pos[1] << " " << new_pos[2] << std::endl;
-  std::cout << "\n";
 
 //////      // =======   Point 2)   =====================
 //////      // ===  Check if I'm still in the cell  =====

@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
   // 1) Create mesh
   mesh Msh;
   Msh.set_n_cells(5);
-  Msh.set_domain_box(-1.5, 5, 0, 1, -0.5, 0.5);   // Set outer compuational domain
+  Msh.set_domain_box(-1.5, 5, 0, 1, -1.5, 0.5);   // Set outer compuational domain
   Msh.create();
 
   // 2) Create exporter object
@@ -28,6 +28,7 @@ int main(int argc, char *argv[])
   Slvr.seed_particles();
 
   // 4) Let's make some steps..
+  Exptr.plot_particles_PNG("../output/provaoutput000.png");
   Slvr.translation_step();
   Exptr.plot_particles_PNG("../output/provaoutput001.png");
   Slvr.translation_step();

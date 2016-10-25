@@ -64,17 +64,14 @@ void mesh::create()
     p_cell_now->XYZcorners[0] = x_min + (ii) * (x_max - x_min)/get_n_cells();
     p_cell_now->XYZcorners[1] = x_min + (ii + 1) * (x_max - x_min)/get_n_cells();
     // Setting Y of corners
-    p_cell_now->XYZcorners[2] = 0.;
-    p_cell_now->XYZcorners[3] = 1.;
+    p_cell_now->XYZcorners[2] = y_min;  // ONLY OK FOR 1D SIMULATIONS!
+    p_cell_now->XYZcorners[3] = y_max;  // ONLY OK FOR 1D SIMULATIONS!
     // Setting Z of corners
-    p_cell_now->XYZcorners[4] = -0.5;
-    p_cell_now->XYZcorners[5] = 0.5;
+    p_cell_now->XYZcorners[4] = z_min;  // ONLY OK FOR 1D SIMULATIONS!
+    p_cell_now->XYZcorners[5] = z_max;  // ONLY OK FOR 1D SIMULATIONS!
 
     // Compute sides of each cell
     p_cell_now->compute_sides();
-std::cout << " DBBB: side of cell: " << p_cell_now->get_side(0) << " " <<
-                                        p_cell_now->get_side(1) << " " << 
-                                        p_cell_now->get_side(2) << std::endl;
   }
 
 }

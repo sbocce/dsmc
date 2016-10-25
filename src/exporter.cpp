@@ -109,7 +109,8 @@ void exporter::export_partpercell_VTK(const char* filename)
 
 void exporter::plot_particles_PNG(const char* filename)
 {
-  // Plots the particles on a PNG image, using lodepng
+  // Plots the particles on a PNG image, using lodepng.
+  // The image is divided in two parts: above we have the y and below the z
 
   // Define some colors..
   int red[4]   = {255, 0, 0, 255};
@@ -122,20 +123,23 @@ void exporter::plot_particles_PNG(const char* filename)
   p_mesh->get_domain_box(x_min, x_max, y_min, y_max, z_min, z_max);
   
   // Parameters for image
-  const unsigned w = 510; // width  [pixel]
-  const unsigned h = round(w*(y_max - y_min)/(x_max - x_min)); // height [pixel]
-  const unsigned b = 10;  // border [pixel]
+  const unsigned w  = 510; // width  [pixel]
+  const unsigned h1  = round(w*(y_max - y_min)/(x_max - x_min)); // height [pixel]
+  const unsigned h2  = round(w*(z_max - z_min)/(x_max - x_min)); // thickness [pixel]
+  const unsigned b  = 10;  // border [pixel]
   if(b < 1){
     std::cerr << "ATTENTION!!!!! BORDER b MUST BE BIGGER THAN 1, OTHERWISE SOME ERROR MIGHT "
               << "APPEAR WHEN PLOTTING BORDERS WITH LINEWIGTH 2 !!!!" << std::endl;
   }
  
   const unsigned w_nob = w - 2*b; // width without borders
-  const unsigned h_nob = h - 2*b; // width without borders
-  
+  const unsigned h1_nob = h1 - 2*b; // heigth, for y axis without borders
+  const unsigned h2_nob = h2 - 2*b; // heigth, for z axis  without borders
+ 
   // Create image vector
-  std::vector<unsigned char> image;
-  image.resize(w*h*4);
+  std::vector<unsigned char> imageXY, imageXZ;
+  imageXY.resize(w*h1*4);
+  imageXZ.resize(w*h2*4);
 
   // Fill the image
   unsigned pos;
@@ -155,32 +159,50 @@ void exporter::plot_particles_PNG(const char* filename)
 
     X1 = p_cell->XYZcorners[0];    X2 = p_cell->XYZcorners[1];
     Y1 = p_cell->XYZcorners[2];    Y2 = p_cell->XYZcorners[3];
-    Z2 = p_cell->XYZcorners[4];    Z2 = p_cell->XYZcorners[5];
+    Z1 = p_cell->XYZcorners[4];    Z2 = p_cell->XYZcorners[5];
 
+    // Positions in pixels
     X1p = round((X1 - x_min)/(x_max - x_min)*w_nob) + b;
     X2p = round((X2 - x_min)/(x_max - x_min)*w_nob) + b;
-    Y1p = round((Y1 - y_min)/(y_max - y_min)*h_nob) + b;
-    Y2p = round((Y2 - y_min)/(y_max - y_min)*h_nob) + b; // check the scaling!!!!
-//    Z1p = round((Z1 - z_min)/(z_max - z_min)*h_nob) + b;
-//    Z2p = round((Z2 - z_min)/(z_max - z_min)*h_nob) + b;
+    Y1p = round((Y1 - y_min)/(y_max - y_min)*h1_nob) + b;
+    Y2p = round((Y2 - y_min)/(y_max - y_min)*h1_nob) + b; // check the scaling!!!!
+    Z1p = round((Z1 - z_min)/(z_max - z_min)*h2_nob) + b;
+    Z2p = round((Z2 - z_min)/(z_max - z_min)*h2_nob) + b;
  
-    // Correcting Y so that it starts from the bottom!
-    Y1p = h - Y1p;
-    Y2p = h - Y2p;
+    // Correcting Y and Z so that they start from the top!
+    Y1p = h1 - Y1p;
+    Y2p = h1 - Y2p;
+    Z1p = h2 - Z1p;
+    Z2p = h2 - Z2p;
 
     // Now plot each line!!
     for(int pp = X1p; pp < X2p; ++pp) { // horizontal lines
-      write_pixel(&image[0], pp, Y1p, w, green);
-      write_pixel(&image[0], pp, Y1p+1, w, green); // linewidth 2
-      write_pixel(&image[0], pp, Y2p, w, green);
-      write_pixel(&image[0], pp, Y2p-1, w, green); // linewidth 2
+      // XY image
+      write_pixel(&imageXY[0], pp, Y1p, w, green);
+      write_pixel(&imageXY[0], pp, Y1p+1, w, green); // linewidth 2
+      write_pixel(&imageXY[0], pp, Y2p, w, green);
+      write_pixel(&imageXY[0], pp, Y2p-1, w, green); // linewidth 2
+
+      // XZ image
+      write_pixel(&imageXZ[0], pp, Z1p, w, green);
+      write_pixel(&imageXZ[0], pp, Z1p+1, w, green); // linewidth 2
+      write_pixel(&imageXZ[0], pp, Z2p, w, green);
+      write_pixel(&imageXZ[0], pp, Z2p-1, w, green); // linewidth 2
     }
 
-    for(int pp = Y2p; pp < Y1p; ++pp) { // vertical lines. Recall Y is inverted!
-      write_pixel(&image[0], X1p, pp, w, green);
-      write_pixel(&image[0], X1p+1, pp, w, green);
-      write_pixel(&image[0], X2p, pp, w, green);
-      write_pixel(&image[0], X2p+1, pp, w, green);
+    for(int pp = Y2p; pp < Y1p; ++pp) { // vertical lines. Recall Y and Z are inverted!
+      // XY image
+      write_pixel(&imageXY[0], X1p, pp, w, green);
+      write_pixel(&imageXY[0], X1p+1, pp, w, green);
+      write_pixel(&imageXY[0], X2p, pp, w, green);
+      write_pixel(&imageXY[0], X2p+1, pp, w, green);
+    }
+    for(int pp = Z2p; pp < Z1p; ++pp) { // vertical lines. Recall Y and Z are inverted!
+      // XZ image
+      write_pixel(&imageXZ[0], X1p, pp, w, green);
+      write_pixel(&imageXZ[0], X1p+1, pp, w, green);
+      write_pixel(&imageXZ[0], X2p, pp, w, green);
+      write_pixel(&imageXZ[0], X2p+1, pp, w, green);
     }
 
     // The grid is plotted. Now plot the particles!
@@ -190,10 +212,12 @@ void exporter::plot_particles_PNG(const char* filename)
       Zpart = p_cell->particles.at(id_p).pos[2];
 
       Xpp = round((Xpart - x_min)/(x_max - x_min)*w_nob) + b;
-      Ypp = round((Ypart - y_min)/(y_max - y_min)*h_nob) + b; // check the scaling!!!!
-      // Zpp = ...
-      // Invert the Y
-      Ypp = h - Ypp;
+      Ypp = round((Ypart - y_min)/(y_max - y_min)*h1_nob) + b; // check the scaling!!!!
+      Zpp = round((Zpart - z_min)/(z_max - z_min)*h2_nob) + b; // check the scaling!!!!
+
+      // Invert the Y and the Z
+      Ypp = h1 - Ypp;
+      Zpp = h2 - Zpp;
 
       if(id_c%2 == 0) {
         color_now[0] = red[0]; color_now[1] = red[1]; color_now[2] = red[2]; color_now[3] = red[3];
@@ -201,23 +225,35 @@ void exporter::plot_particles_PNG(const char* filename)
         color_now[0] = blue[0]; color_now[1] = blue[1]; color_now[2] = blue[2]; color_now[3] = blue[3];
       }
       
-      write_pixel(&image[0], Xpp, Ypp, w,   color_now); // linewidth 2
-      write_pixel(&image[0], Xpp+1, Ypp, w, color_now); // linewidth 2
-      write_pixel(&image[0], Xpp-1, Ypp, w, color_now); // linewidth 2
-      write_pixel(&image[0], Xpp, Ypp+1, w, color_now); // linewidth 2
-      write_pixel(&image[0], Xpp, Ypp-1, w, color_now); // linewidth 2
+      write_pixel(&imageXY[0], Xpp, Ypp, w,   color_now); // linewidth 2
+      write_pixel(&imageXY[0], Xpp+1, Ypp, w, color_now); // linewidth 2
+      write_pixel(&imageXY[0], Xpp-1, Ypp, w, color_now); // linewidth 2
+      write_pixel(&imageXY[0], Xpp, Ypp+1, w, color_now); // linewidth 2
+      write_pixel(&imageXY[0], Xpp, Ypp-1, w, color_now); // linewidth 2
+      // XZ image
+      write_pixel(&imageXZ[0], Xpp, Zpp, w,   color_now); // linewidth 2
+      write_pixel(&imageXZ[0], Xpp+1, Zpp, w, color_now); // linewidth 2
+      write_pixel(&imageXZ[0], Xpp-1, Zpp, w, color_now); // linewidth 2
+      write_pixel(&imageXZ[0], Xpp, Zpp+1, w, color_now); // linewidth 2
+      write_pixel(&imageXZ[0], Xpp, Zpp-1, w, color_now); // linewidth 2
     }
 
     // ------   song time   -------------------------------------------
-    // Port Royal! Black widow on the seeeeeea
+    // Port Royal! Dark widow on the seeeeeea
     // Port Royal! Whooo ho ho hooo hooo ho hooo hoooo ho hoooooooooo
     // ----------------------------------------------------------------
   }
+ 
+  // Concatenate the images
+  std::vector<unsigned char> image_cat;
+  image_cat.reserve( imageXY.size() + imageXZ.size() ); // preallocate memory
+  image_cat.insert( image_cat.end(), imageXY.begin(), imageXY.end() );
+  image_cat.insert( image_cat.end(), imageXZ.begin(), imageXZ.end() );
 
   // Encode and save the image
   std::vector<unsigned char> buffer;
 
-  unsigned error = lodepng::encode(buffer, image, w, h);
+  unsigned error = lodepng::encode(buffer, image_cat, w, h1+h2);
   if(error) {
     std::cout << "encoder error " << error << ": "<< lodepng_error_text(error) << std::endl;
   }
