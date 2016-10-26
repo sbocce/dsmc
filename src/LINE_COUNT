@@ -1,0 +1,8 @@
+#!/bin/bash
+
+echo ""
+echo "LINE COUNT:"
+echo ""
+find . -name '*' | xargs wc -l
+echo ".... of whom more or less half are comments hehehe"
+echo ""
