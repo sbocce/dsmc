@@ -11,7 +11,6 @@ The executable is placed into the 'bin' directory.
 **NOW DOING..**
 
 I've implemented the walls.... but they don't work.
-NICE NEWS: we've got a segfault for velocity of 100m/s. Debug it and find out what's going on!
 
 **COMMENTS AND USELESS STUFF**
 
