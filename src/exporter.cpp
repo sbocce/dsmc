@@ -113,36 +113,41 @@ void exporter::plot_particles_PNG(const char* filename)
   // The image is divided in two parts: above we have the y and below the z
 
   // Define some colors..
-  int red[4]   = {255, 0, 0, 255};
-  int green[4] = {0, 255, 0, 255};
-  int blue[4]  = {0, 0, 255, 255};
-  int color_now[4] = {0, 0, 0, 255};
+  int red[4]   = {254, 0, 0, 254};
+  int green[4] = {0, 254, 0, 254};
+  int blue[4]  = {0, 0, 254, 254};
+  int color_now[4] = {0, 0, 0, 254};
 
   // First of all, find the domain limits
   double x_min, x_max, y_min, y_max, z_min, z_max; // domain limits
   p_mesh->get_domain_box(x_min, x_max, y_min, y_max, z_min, z_max);
   
   // Parameters for image
-  const unsigned w  = 510; // width  [pixel]
-  const unsigned h1  = round(w*(y_max - y_min)/(x_max - x_min)); // height [pixel]
-  const unsigned h2  = round(w*(z_max - z_min)/(x_max - x_min)); // thickness [pixel]
-  const unsigned b  = 10;  // border [pixel]
+  const size_t w  = 510; // width  [pixel]
+//  const unsigned w  = 520; // width  [pixel]
+  const size_t h1  = round(w*(y_max - y_min)/(x_max - x_min)); // height [pixel]
+  const size_t h2  = round(w*(z_max - z_min)/(x_max - x_min)); // thickness [pixel]
+  const size_t b  = 10;  // border [pixel]
   if(b < 1){
     std::cerr << "ATTENTION!!!!! BORDER b MUST BE BIGGER THAN 1, OTHERWISE SOME ERROR MIGHT "
               << "APPEAR WHEN PLOTTING BORDERS WITH LINEWIGTH 2 !!!!" << std::endl;
   }
  
-  const unsigned w_nob = w - 2*b; // width without borders
-  const unsigned h1_nob = h1 - 2*b; // heigth, for y axis without borders
-  const unsigned h2_nob = h2 - 2*b; // heigth, for z axis  without borders
+  const size_t w_nob = w - 2*b; // width without borders
+  const size_t h1_nob = h1 - 2*b; // heigth, for y axis without borders
+  const size_t h2_nob = h2 - 2*b; // heigth, for z axis  without borders
  
   // Create image vector
-  std::vector<unsigned char> imageXY, imageXZ;
+  std::vector<unsigned char> imageXY;
+  std::vector<unsigned char> imageXZ;
+  std::vector<unsigned char> imageXX;
+
   imageXY.resize(w*h1*4);
   imageXZ.resize(w*h2*4);
 
+
   // Fill the image
-  unsigned pos;
+  size_t pos;
 
   double X1, X2, Y1, Y2, Z1, Z2, Xpart, Ypart, Zpart; // working variables
   size_t X1p, X2p, Y1p, Y2p, Z1p, Z2p, Xpp, Ypp, Zpp; // working variables
@@ -154,7 +159,6 @@ void exporter::plot_particles_PNG(const char* filename)
     // 1) convert the corners positions (double) to sizes in pixel (int)
     // 2) upper-left corresponds to point (0,0) in the image!
     // 3) draw each side of each cell
-
     p_cell = &(p_mesh->cells.at(id_c));
 
     X1 = p_cell->XYZcorners[0];    X2 = p_cell->XYZcorners[1];
@@ -176,37 +180,37 @@ void exporter::plot_particles_PNG(const char* filename)
     Z2p = h2 - Z2p;
 
     // Now plot each line!!
-    for(int pp = X1p; pp < X2p; ++pp) { // horizontal lines
+    for(size_t pp = X1p; pp < X2p; ++pp) { // horizontal lines
       // XY image
-      write_pixel(&imageXY[0], pp, Y1p, w, green);
-      write_pixel(&imageXY[0], pp, Y1p+1, w, green); // linewidth 2
-      write_pixel(&imageXY[0], pp, Y2p, w, green);
-      write_pixel(&imageXY[0], pp, Y2p-1, w, green); // linewidth 2
+      write_pixel(imageXY, pp, Y1p, w, green);
+      write_pixel(imageXY, pp, Y1p+1, w, green); // linewidth 2
+      write_pixel(imageXY, pp, Y2p, w, green);
+      write_pixel(imageXY, pp, Y2p-1, w, green); // linewidth 2
 
       // XZ image
-      write_pixel(&imageXZ[0], pp, Z1p, w, green);
-      write_pixel(&imageXZ[0], pp, Z1p+1, w, green); // linewidth 2
-      write_pixel(&imageXZ[0], pp, Z2p, w, green);
-      write_pixel(&imageXZ[0], pp, Z2p-1, w, green); // linewidth 2
+      write_pixel(imageXZ, pp, Z1p, w, green);
+      write_pixel(imageXZ, pp, Z1p+1, w, green); // linewidth 2
+      write_pixel(imageXZ, pp, Z2p, w, green);
+      write_pixel(imageXZ, pp, Z2p-1, w, green); // linewidth 2
     }
 
-    for(int pp = Y2p; pp < Y1p; ++pp) { // vertical lines. Recall Y and Z are inverted!
+    for(size_t pp = Y2p; pp < Y1p; ++pp) { // vertical lines. Recall Y and Z are inverted!
       // XY image
-      write_pixel(&imageXY[0], X1p, pp, w, green);
-      write_pixel(&imageXY[0], X1p+1, pp, w, green);
-      write_pixel(&imageXY[0], X2p, pp, w, green);
-      write_pixel(&imageXY[0], X2p+1, pp, w, green);
+      write_pixel(imageXY, X1p, pp, w, green);
+      write_pixel(imageXY, X1p+1, pp, w, green);
+      write_pixel(imageXY, X2p, pp, w, green);
+      write_pixel(imageXY, X2p+1, pp, w, green);
     }
-    for(int pp = Z2p; pp < Z1p; ++pp) { // vertical lines. Recall Y and Z are inverted!
+    for(size_t pp = Z2p; pp < Z1p; ++pp) { // vertical lines. Recall Y and Z are inverted!
       // XZ image
-      write_pixel(&imageXZ[0], X1p, pp, w, green);
-      write_pixel(&imageXZ[0], X1p+1, pp, w, green);
-      write_pixel(&imageXZ[0], X2p, pp, w, green);
-      write_pixel(&imageXZ[0], X2p+1, pp, w, green);
+      write_pixel(imageXZ, X1p, pp, w, green);
+      write_pixel(imageXZ, X1p+1, pp, w, green);
+      write_pixel(imageXZ, X2p, pp, w, green);
+      write_pixel(imageXZ, X2p+1, pp, w, green);
     }
 
     // The grid is plotted. Now plot the particles!
-    for(int id_p = 0; id_p < p_cell->particles.size(); ++id_p) {
+    for(size_t id_p = 0; id_p < p_cell->particles.size(); ++id_p) {
       Xpart = p_cell->particles.at(id_p).pos[0];
       Ypart = p_cell->particles.at(id_p).pos[1];
       Zpart = p_cell->particles.at(id_p).pos[2];
@@ -219,23 +223,29 @@ void exporter::plot_particles_PNG(const char* filename)
       Ypp = h1 - Ypp;
       Zpp = h2 - Zpp;
 
+      // CHECK: if particle is out of the domain, DO NOT PLOT IT!
+      if((Xpp >= w) || (Xpp < 0) || (Ypp >= h1) || (Ypp < 0) || (Zpp >= h2) || (Zpp < 0)) {
+        continue; // Do not plot this particle
+      }
+
       if(id_c%2 == 0) {
         color_now[0] = red[0]; color_now[1] = red[1]; color_now[2] = red[2]; color_now[3] = red[3];
       } else {
         color_now[0] = blue[0]; color_now[1] = blue[1]; color_now[2] = blue[2]; color_now[3] = blue[3];
       }
-      
-      write_pixel(&imageXY[0], Xpp, Ypp, w,   color_now); // linewidth 2
-      write_pixel(&imageXY[0], Xpp+1, Ypp, w, color_now); // linewidth 2
-      write_pixel(&imageXY[0], Xpp-1, Ypp, w, color_now); // linewidth 2
-      write_pixel(&imageXY[0], Xpp, Ypp+1, w, color_now); // linewidth 2
-      write_pixel(&imageXY[0], Xpp, Ypp-1, w, color_now); // linewidth 2
+
+      // XY image      
+      write_pixel(imageXY, Xpp, Ypp, w,   color_now); // linewidth 2
+      write_pixel(imageXY, Xpp+1, Ypp, w, color_now); // linewidth 2
+      write_pixel(imageXY, Xpp-1, Ypp, w, color_now); // linewidth 2
+      write_pixel(imageXY, Xpp, Ypp+1, w, color_now); // linewidth 2
+      write_pixel(imageXY, Xpp, Ypp-1, w, color_now); // linewidth 2
       // XZ image
-      write_pixel(&imageXZ[0], Xpp, Zpp, w,   color_now); // linewidth 2
-      write_pixel(&imageXZ[0], Xpp+1, Zpp, w, color_now); // linewidth 2
-      write_pixel(&imageXZ[0], Xpp-1, Zpp, w, color_now); // linewidth 2
-      write_pixel(&imageXZ[0], Xpp, Zpp+1, w, color_now); // linewidth 2
-      write_pixel(&imageXZ[0], Xpp, Zpp-1, w, color_now); // linewidth 2
+      write_pixel(imageXZ, Xpp, Zpp, w,   color_now); // linewidth 2
+      write_pixel(imageXZ, Xpp+1, Zpp, w, color_now); // linewidth 2
+      write_pixel(imageXZ, Xpp-1, Zpp, w, color_now); // linewidth 2
+      write_pixel(imageXZ, Xpp, Zpp+1, w, color_now); // linewidth 2
+      write_pixel(imageXZ, Xpp, Zpp-1, w, color_now); // linewidth 2
     }
 
     // ------   song time   -------------------------------------------
@@ -243,12 +253,30 @@ void exporter::plot_particles_PNG(const char* filename)
     // Port Royal! Whooo ho ho hooo hooo ho hooo hoooo ho hoooooooooo
     // ----------------------------------------------------------------
   }
- 
+
   // Concatenate the images
   std::vector<unsigned char> image_cat;
   image_cat.reserve( imageXY.size() + imageXZ.size() ); // preallocate memory
   image_cat.insert( image_cat.end(), imageXY.begin(), imageXY.end() );
   image_cat.insert( image_cat.end(), imageXZ.begin(), imageXZ.end() );
+
+//  The following is a backup way.. the other was throwing some weird error
+//
+//  std::vector<unsigned char> image_cat;
+//  image_cat.resize( imageXY.size() + imageXZ.size() ); // preallocate memory
+//
+//  size_t id = 0;
+//
+//  for(size_t ii = 0; ii < imageXY.size(); ++ii)
+//  {
+//    image_cat.at(id) = imageXY.at(ii);
+//    id++;
+//  }
+//  for(size_t ii = 0; ii < imageXZ.size(); ++ii)
+//  {
+//    image_cat.at(id) = imageXZ.at(ii);
+//    id++;
+//  }
 
   // Encode and save the image
   std::vector<unsigned char> buffer;
@@ -259,17 +287,16 @@ void exporter::plot_particles_PNG(const char* filename)
   }
 
   lodepng::save_file(buffer, filename);
-
 }
 
 // ---------------------------------------------
 
-void exporter::write_pixel(unsigned char* img, int x, int y, int w, int RGBA[])
+void exporter::write_pixel(std::vector<unsigned char>& img, int x, int y, int w, int RGBA[])
 {
   // Just a function to make everything a little bit neater
    int pos = 4*(x + y*w);
-   img[pos+0] = RGBA[0];   // R
-   img[pos+1] = RGBA[1];   // G
-   img[pos+2] = RGBA[2];   // B
-   img[pos+3] = RGBA[3];   // alpha  
+   img.at(pos+0) = RGBA[0];   // R
+   img.at(pos+1) = RGBA[1];   // G
+   img.at(pos+2) = RGBA[2];   // B
+   img.at(pos+3) = RGBA[3];   // alpha  
 }

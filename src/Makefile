@@ -1,6 +1,6 @@
 # Hello! :)
 
-CMP = g++  -c 
+CMP = g++  -c  -g
 LNK = g++
 
 # I need the headers of lodepng, that are in main_dir/lodepng

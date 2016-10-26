@@ -29,18 +29,25 @@ int main(int argc, char *argv[])
   Slvr.seed_particles();
 
   // 4) Let's make some steps..
+  std::cout << ">>  1\n";
   Exptr.plot_particles_PNG("../output/provaoutput000.png");
   Slvr.translation_step();
+  std::cout << ">>  2\n";
   Exptr.plot_particles_PNG("../output/provaoutput001.png");
   Slvr.translation_step();
+  std::cout << ">>  3\n";
   Exptr.plot_particles_PNG("../output/provaoutput002.png");
   Slvr.translation_step();
+  std::cout << ">>  4\n";
   Exptr.plot_particles_PNG("../output/provaoutput003.png");
   Slvr.translation_step();
+  std::cout << ">>  5\n";
   Exptr.plot_particles_PNG("../output/provaoutput004.png");
   Slvr.translation_step();
+  std::cout << ">>  6\n";
   Exptr.plot_particles_PNG("../output/provaoutput005.png");
   Slvr.translation_step();
+  std::cout << ">>  7\n";
   Exptr.plot_particles_PNG("../output/provaoutput006.png");
   Slvr.translation_step();
   Exptr.plot_particles_PNG("../output/provaoutput007.png");
