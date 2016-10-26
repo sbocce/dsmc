@@ -23,3 +23,24 @@ double particle::get_mass()
 {
   return this->m;
 }
+
+// ---------------------------------------------------
+
+void particle::init_from_pointer(particle* p_part)
+{
+  // Given a pointer to a particle, this function copies the values
+  // from that particle to the local one.
+  // REMEMBER TO UPDATE THIS FUNCTION IF NEW FEATURES SUCH AS ROTATIONAL
+  // OR VIBRATIONAL STATES OR WHATEVER IS ADDED!!!!
+
+  this->set_mass(p_part->get_mass());
+
+  this->pos[0] = p_part->pos[0];
+  this->pos[1] = p_part->pos[1];
+  this->pos[2] = p_part->pos[2];
+
+  this->vel[0] = p_part->vel[0];
+  this->vel[1] = p_part->vel[1];
+  this->vel[2] = p_part->vel[2];
+
+}

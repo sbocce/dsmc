@@ -12,7 +12,7 @@ class cell {
     ~cell(){};
 
     double XYZcorners[6];                    // <<<<<---- X1 X2 Y1 Y2 Z1 Z2
-    std::vector< std::vector<cell*> > neighbors;            // <<<<<---------------  !! Important! Xneighbors, Yneighbors, Zneighbors
+    std::vector< std::vector<cell*> > neighbors;  // <<<<<---------------  !! Important! Xneighbors, Yneighbors, Zneighbors
     std::vector< particle > particles;
 
     // Geometry
@@ -34,7 +34,8 @@ class cell {
     void   set_id(size_t cell_id);
     size_t get_id();
     void   advect_particle(size_t particle_id, double dt, const char* sol_type);
-    void   remove_particle(size_t particle_id);
+    void   add_particle(particle* p_part); // Adds a particle to the current cell
+    void   pop_particle(size_t particle_id); // Removes a particle from the cell
 
   private:
     double volume;
@@ -55,8 +56,8 @@ class cell {
     //                    are walls.
 
     char   face_type[6];
-    char   face_T[6];
-    char   face_a[6];
+    double face_T[6];
+    double face_a[6];
 };
 
 #endif /* CELL_H */
