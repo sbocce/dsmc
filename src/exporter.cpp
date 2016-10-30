@@ -123,8 +123,8 @@ void exporter::plot_particles_PNG(const char* filename)
   p_mesh->get_domain_box(x_min, x_max, y_min, y_max, z_min, z_max);
   
   // Parameters for image
-  const size_t w  = 510; // width  [pixel]
-//  const unsigned w  = 520; // width  [pixel]
+  //const size_t w  = 510; // width  [pixel]
+  const size_t w  = 1000; // width  [pixel]
   const size_t h1  = round(w*(y_max - y_min)/(x_max - x_min)); // height [pixel]
   const size_t h2  = round(w*(z_max - z_min)/(x_max - x_min)); // thickness [pixel]
   const size_t b  = 10;  // border [pixel]

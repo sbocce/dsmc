@@ -1,10 +1,14 @@
 #include <iostream>
 #include <math.h>
+#include <stdio.h>
+#include <string.h>
 
 #include "solver.h"
 #include "stat_tools.h"
 
-solver::solver(mesh* p_msh) : p_mesh(p_msh) { }
+solver::solver(mesh* p_msh, exporter* p_exp) : p_mesh(p_msh),
+                                               p_expt(p_exp),
+                                               timestep(0) { }
 
 //------------------------------------------------------
 
@@ -15,7 +19,7 @@ std::cout << "Solver: reading input file..." << std::endl;
   std::cout << " ATTENTION: solver.initialize() should read an input file and pick the DeltaT for example!\n";
   std::cout << "            hard-coded for now!\n";
 
-  dt = 0.001; // <<<-----------------  HHHAAAAAARD COOOODED!!!!!
+  dt = 0.0001; // <<<-----------------  HHHAAAAAARD COOOODED!!!!!
 
   sol_type = "1D";
 }
@@ -24,7 +28,7 @@ std::cout << "Solver: reading input file..." << std::endl;
 
 void solver::seed_particles()
 {
-  int PARTICLES_PER_CELL = 10; // <<<<<<<<<<<<<<<<<<<<<<<<<------------------  !!!!!!
+  int PARTICLES_PER_CELL = 50; // <<<<<<<<<<<<<<<<<<<<<<<<<------------------  !!!!!!
   double VEL_MAX_component = 100;
 
   // For each cell, fill it properly. "id_c" stands for "id_cell". "id_p" for "id_particle"
@@ -62,6 +66,32 @@ void solver::seed_particles()
 
 //------------------------------------------------------
 
+size_t solver::get_timestep()
+{
+  return this->timestep;
+}
+
+//------------------------------------------------------
+
+void solver::compute_n_steps(size_t n)
+{
+  for(size_t t_id = 0; t_id < n; ++t_id)
+  {
+    std::cout << "Solving step: " << t_id << " of " << n - 1 << std::endl;
+    
+    // Translation step
+    translation_step();
+
+    // Collision step
+    collision_step();
+
+    // One timestep has been performed. Adjourn the timestep variable
+    timestep++;
+  }
+}
+
+//------------------------------------------------------
+
 void solver::translation_step()
 {
   // Working variables
@@ -82,13 +112,24 @@ void solver::translation_step()
     }
 
     // And once it's done, implement some kind of validation and export it!!!!!!
-    
-    // [... export ...]
-    
- 
+    char integer_string[32];
+    sprintf(integer_string, "%05d", timestep);
+    char filename[512] = "../output/provaoutput";
+    char extension[31] = ".png";
+    strcat(filename, integer_string);
+    strcat(filename, extension);
+
+    p_expt->plot_particles_PNG(filename);
+
   }
 
   // Is it in the same cell as before?
 }
 
+//------------------------------------------------------
 
+void solver::collision_step()
+{
+  // SEE PAG 218, Bird
+  // 
+}
