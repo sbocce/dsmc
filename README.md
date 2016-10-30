@@ -27,9 +27,15 @@ The istantaneous state is plotted on a PNG image.
 *TODO 2*: implement some function that may compute and extract values from 
           the cells
 
-*TODO 3*: input file reader. Insert argc, argv[] and pass the filename to
+*TODO 3*: implement a better wall bouncing! MAXWELL MODEL for example. Mine
+          is too naive I guess..
+
+*TODO 4*: input file reader. Insert argc, argv[] and pass the filename to
           the solver's constructor. In the solver::initialize() function
           call the file_reader and pick required values.
+
+*TODO 5*: implement collisions. Take a look at Handbook of Fluid Dynamics,
+          by Johnson. Has a chapter about it. Seems very practical.
 
 **FUTURE WORK and NOTES FOR ME**
 
