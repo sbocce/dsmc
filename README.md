@@ -11,7 +11,7 @@ The executable is placed into the 'bin' directory.
 
 **NOW DOING..**
 
-- cool. No jobs pending. -
+Implementing HS collision model..
 
 **COMMENTS AND USELESS STUFF**
 
