@@ -6,7 +6,7 @@ LNK = g++
 # I need the headers of lodepng, that are in main_dir/lodepng
 OPT = -I../lodepng
 
-OBJS =  solver.o  exporter.o  mesh.o  cell.o  particle.o  stat_tools.o
+OBJS =  solver.o  exporter.o  mesh.o  cell.o  particle.o  sim_data.o  stat_tools.o
 
 
 # Main object
@@ -34,6 +34,9 @@ cell.o:                 cell.cpp
 
 particle.o:             particle.cpp
 	$(CMP) $(OPT)   particle.cpp
+
+sim_data.o:             sim_data.cpp
+	$(CMP) $(OPT)   sim_data.cpp
 
 stat_tools:             stat_tools.cpp
 	$(CMP) $(OPT)   stat_tools.cpp

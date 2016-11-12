@@ -2,11 +2,24 @@
 #include <fstream>
 #include <sstream>
 #include <cmath>
+#include <stdlib.h>     /* system, exit, EXIT_FAILURE */
 
 #include "exporter.h"
 #include "lodepng.h"
 
-exporter::exporter(mesh* p_msh) : p_mesh(p_msh) { }
+exporter::exporter(mesh* p_msh) : p_mesh(p_msh) 
+{ 
+  this->initialize();
+}
+
+// ---------------------------------------------
+
+void exporter::initialize()
+{
+  // Creates a directory named 'output', into the working directory,
+  // where stuff is exported
+  system("mkdir -p ./output");
+}
 
 // ---------------------------------------------
 

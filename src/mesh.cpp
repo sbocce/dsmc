@@ -4,6 +4,10 @@
 
 #include "mesh.h"
 
+mesh::mesh(sim_data* p_dat) : p_data(p_dat) { }
+
+//------------------------------------------------------
+
 void mesh::set_n_cells(int nn) 
 {
   this->n_cells = nn;

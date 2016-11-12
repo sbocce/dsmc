@@ -6,23 +6,10 @@
 #include "solver.h"
 #include "stat_tools.h"
 
-solver::solver(mesh* p_msh, exporter* p_exp) : p_mesh(p_msh),
-                                               p_expt(p_exp),
-                                               timestep(0) { }
-
-//------------------------------------------------------
-
-void solver::initialize()
-{
-std::cout << "Solver: reading input file..." << std::endl;
-
-  std::cout << " ATTENTION: solver.initialize() should read an input file and pick the DeltaT for example!\n";
-  std::cout << "            hard-coded for now!\n";
-
-  dt = 0.0001; // <<<-----------------  HHHAAAAAARD COOOODED!!!!!
-
-  sol_type = "1D";
-}
+solver::solver(sim_data* p_dat, mesh* p_msh, exporter* p_exp) : p_data(p_dat),
+                                                                p_mesh(p_msh),
+                                                                p_expt(p_exp),
+                                                                timestep(0) { }
 
 //------------------------------------------------------
 
@@ -97,7 +84,6 @@ void solver::translation_step()
   // Working variables
   double    r_end[3];
   cell*     p_cell;
-// REMOVE ME  //  particle* p_part;  
 
   // for each cell.... "id_c" stands for "id_cell"
   for(size_t id_c = 0; id_c < p_mesh->get_n_cells(); ++id_c) {
@@ -107,14 +93,14 @@ void solver::translation_step()
     // for each particle of the cell..... "id_p" stands for "id_particle"
     for(size_t id_p = 0; id_p < p_mesh->cells.at(id_c).particles.size(); ++id_p) {
 
-      p_cell->advect_particle(id_p, dt, sol_type);
+      p_cell->advect_particle(id_p, p_data->get_dt(), p_data->get_sol_type());
 
     }
 
     // And once it's done, implement some kind of validation and export it!!!!!!
     char integer_string[32];
     sprintf(integer_string, "%05d", timestep);
-    char filename[512] = "../output/provaoutput";
+    char filename[512] = "./output/provaoutput";
     char extension[31] = ".png";
     strcat(filename, integer_string);
     strcat(filename, extension);
@@ -132,4 +118,28 @@ void solver::collision_step()
 {
   // SEE PAG 218, Bird
   // 
+  cell* p_cell;
+  double cell_pcp; // number of possible collision partners for the cell
+
+  // variables related to the considered cell
+  size_t Np;       // number of particles inside a cell
+  double Vol;      // cell volume
+
+  // FOR EACH CELL:
+  for(size_t id_c = 0; id_c < p_mesh->get_n_cells(); ++id_c) {
+    
+    p_cell = &(p_mesh->cells.at(id_c)); // set pointer to the current cell
+
+    // 1) Find how many collisions are to be computed
+    //   1.1) compute (sigma cr)|max
+    //   1.2) set cell_pcp according to NTC scheme
+
+    Np  = p_cell->particles.size();
+    Vol = p_cell->get_volume();
+
+//    cell_pcp = 0.5*Np*(Np - 1)*Fnum*sigma_cr_max*dt/Vol;
+ 
+    // 2) compute them..
+
+  }
 }

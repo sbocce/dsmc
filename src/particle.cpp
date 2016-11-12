@@ -42,5 +42,4 @@ void particle::init_from_pointer(particle* p_part)
   this->vel[0] = p_part->vel[0];
   this->vel[1] = p_part->vel[1];
   this->vel[2] = p_part->vel[2];
-
 }

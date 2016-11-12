@@ -8,16 +8,36 @@ This will first of all compile lodepng, then it will go into src and compile
 the main program.
 The executable is placed into the 'bin' directory.
 
+You can run the program from wherever you want; the output will be put into
+a folder in the working directory, named 'output'.
+
 
 **NOW DOING..**
 
-Implementing HS collision model..
+I'm creating an object sol\_data, that reads an input file and saves:
+1) general properties for the solver such as dt and solution\_type
+2) properties of particles such as mass, diameter, reference temperatures,
+   collisional parameters etc, and all those can be called by the collisor 
+   routine.
+
+THEN I have to add into the particle class an integer variable "species".
+This will imply modifying the seed\_particle() function..
+
+THEN I have to implement HS and VHS collisional models.. Start from the 
+solver::collision\_step().
+
 
 **COMMENTS AND USELESS STUFF**
 
 Ok, for now the advection of particles is implemented in 1D.
 The particles move and periodicity is applied in the Y and Z direction.
 The istantaneous state is plotted on a PNG image.
+
+*TODO 0*: be careful! If velocity is so high that a particle spans one cell
+          and its neighboring also during only one timestep, then it will be 
+          assigned to a neighboring cell, but it will be out of it!
+          IMPLEMENT SOME CHECK IF PARTICLES ARE OUT OF THE DOMAIN, AND THROW
+          AN ERROR LIKE "choose a smaller Dt, you moron!"
 
 *TODO 1*: implement a counter, that spits the TOTAL NUMBER OF PARTICLES,
           because before proceeding I'd like to be sure that I've 

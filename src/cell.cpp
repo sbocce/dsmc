@@ -6,7 +6,7 @@
 #include "constants.h"
 
 // --------------------------------------------
-cell::cell() // constructor
+cell::cell()  // constructor
 {
   // Initializes all the faces of the cell to 'n', that is 'neighbor'.
   // The mesh class then can change some of them, to impose BCs such as walls.
@@ -67,11 +67,13 @@ double cell::get_side(size_t side_id)
 
 double cell::get_volume()
 {
+  double s0, s1, s2;
 
-  std::cout << "IMPLEMENT ME!!!!" << std::endl;
+  s0 = this->get_side(0);  // x side
+  s1 = this->get_side(1);  // y side
+  s2 = this->get_side(2);  // z side
 
-  return -666.; // il numero della bestia
-
+  return (s0*s1*s2);   // volume
 }
 
 // --------------------------------------------

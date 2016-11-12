@@ -3,11 +3,14 @@
 
 #include <iostream>
 
+#include "sim_data.h"
 #include "cell.h"
 
 class mesh {
 
   public:
+    mesh(sim_data* p_dat);
+    ~mesh(){};
 
     void set_n_cells(int nn);
     int  get_n_cells();
@@ -20,6 +23,7 @@ class mesh {
     double x_min, x_max, y_min, y_max, z_min, z_max; // Limits of computational domain
 
   private:
+    sim_data* p_data;
     int n_cells;
     
 };

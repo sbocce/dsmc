@@ -9,6 +9,8 @@ class particle {
     double vel[3];
     double pos[3];
 
+    int    species; // identifier the particle species
+
     void   advect(double dt, double new_pos[]);
     double compute_e_t(); // Computes and returns the translational energy of the 
                           // particle

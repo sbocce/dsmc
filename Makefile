@@ -10,11 +10,11 @@
 all:
 	@echo "Preparing directory tree (making sure important directories exist!)"
 	mkdir -p bin
-	mkdir -p output
 	cd lodepng; make
 	cd src;     make
 
 clean:
 	cd lodepng; make clean
 	cd src;     make clean
-	cd bin;     rm -f *.exe
+	rm -rf bin
+#	cd bin;     rm -f *.exe
