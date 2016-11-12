@@ -1,34 +1,20 @@
-CMP = g++  -c 
-LNK = g++
-OPT = 
+# ----------------------------------
+# This is the global makefile!
+# Run this and you should be done.
+# ----------------------------------
 
-OBJS =  solver.o  mesh.o  cell.o  stat_tools.o
+# Note for those like me that are complete noobs with Makefiles:
+# each line of the Makefile is run on a separate shell. For this
+# reason, there's no need to do a cd back into the main directory!
 
+all:
+	@echo "Preparing directory tree (making sure important directories exist!)"
+	mkdir -p bin
+	mkdir -p output
+	cd lodepng; make
+	cd src;     make
 
-# Main object
-
-main.exe:  main.o  $(OBJS)
-	$(LNK) $(OPT)  main.o  $(OBJS)  \
-              -o main.exe
-
-# Objects generation
-
-main.o:                 main.cpp  $(OBJS)
-	$(CMP) $(OPT)   main.cpp 
-
-solver.o:               solver.cpp
-	$(CMP) $(OPT)   solver.cpp
-
-mesh.o:                 mesh.cpp  cell.o  stat_tools.o
-	$(CMP) $(OPT)   mesh.cpp 
-
-cell.o:                 cell.cpp
-	$(CMP) $(OPT)   cell.cpp
-
-stat_tools:             stat_tools.cpp
-	$(CMP) $(OPT)   stat_tools.cpp
-
-clean: 
-	@echo cleaning objects, modules and executables 
-	rm  *.o  *.mod  *.exe
-  
+clean:
+	cd lodepng; make clean
+	cd src;     make clean
+	cd bin;     rm -f *.exe
