@@ -47,6 +47,8 @@ class sim_data {
     std::vector<double>      species_mass;    // species molecular mass [kg]
     std::vector<double>      species_charge;  // species charge [q_el]
 
+    std::string              collisions_file;    // name of file for species props
+
     // General variables
     bool png_flag;
 };

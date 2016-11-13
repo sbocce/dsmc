@@ -10,6 +10,18 @@
 
 sim_data::sim_data(std::string s_file_input) : png_flag(0) // initialized to 0
 { 
+
+std::cout << "                                               " << std::endl;  
+std::cout << "         _                                     " << std::endl;         
+std::cout << "        | |            ___  ___ __  __  ___    " << std::endl;  
+std::cout << "        | |_  __    _ |   \\/ __|  \\/  |/ __|   " << std::endl; 
+std::cout << "        | ' \\/ .`|/V V\\ |) \\__ \\ |\\/| | (__    " << std::endl; 
+std::cout << "        |_||_\\__,|\\_._/___/|___/_|  |_|\\___|   " << std::endl; 
+std::cout << "                                               " << std::endl;  
+std::cout << "  > horsing around with DSMC <                 " << std::endl;  
+std::cout << "                                               " << std::endl;  
+std::cout << "                                               " << std::endl;  
+
   this->s_file_input = s_file_input;
   this->initialize();
 }
@@ -139,7 +151,7 @@ void sim_data::initialize()
         lineStream >> this->Fnum;           // transform string into a double
     }
 
-    // --- Timestep
+    // ---  Timestep
     if(lineNow.compare("Timestep:")==0) {
         lineStream.str("");                 // empty buffer and ..
         lineStream.clear();                 // .. clear the string
@@ -148,13 +160,19 @@ void sim_data::initialize()
         lineStream >> this->dt;             // transform string into a double
     }
 
-    // ---  Solution Type
+    // ---  Species File
     if(lineNow.compare("Species File:")==0) {
         // It's just a string, no need for a stringstream object
         this->species_file = linesVect.at(ii+1);
     }
 
-    // --- PNG exporting
+    // ---  Collisions File 
+    if(lineNow.compare("Collisions File:")==0) {
+        // It's just a string, no need for a stringstream object
+        this->collisions_file = linesVect.at(ii+1);
+    }
+
+    // ---  PNG exporting
     // An image is exported at each timestep
     if(lineNow.compare("PNG exporting:")==0) {
       lineStream.str("");                 // empty buffer and ..
@@ -168,10 +186,11 @@ void sim_data::initialize()
 
   // Variables to save read strings
   std::cout << "\nInput file was read: " << std::endl;
-  std::cout << "    Solution type: "         << this->sol_type     << std::endl;
-  std::cout << "    Timestep:      "         << this->dt           << std::endl;
-  std::cout << "    Fnum:          "         << this->Fnum         << std::endl;
-  std::cout << "    Species file:  "         << this->species_file << std::endl;
+  std::cout << "    Solution type:   "   << this->sol_type        << std::endl;
+  std::cout << "    Timestep:        "   << this->dt              << std::endl;
+  std::cout << "    Fnum:            "   << this->Fnum            << std::endl;
+  std::cout << "    Species file:    "   << this->species_file    << std::endl;
+  std::cout << "    Collisions file: "   << this->collisions_file << std::endl;
 
   std::cout << std::endl;
 

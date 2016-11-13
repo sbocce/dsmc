@@ -11,8 +11,11 @@ Fnum:
 Solution Type:
 1D
 
-Species File:
+Species File:    # file storing species informations 
 species.dat
 
-PNG exporting:
+Collisions File: # file storing collisional informations
+collisions.dat
+
+PNG exporting: # may be 0 or 1
 0
