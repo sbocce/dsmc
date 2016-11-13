@@ -8,7 +8,7 @@
 #include "sim_data.h"
 
 
-sim_data::sim_data(std::string s_file_input) 
+sim_data::sim_data(std::string s_file_input) : png_flag(0) // initialized to 0
 { 
   this->s_file_input = s_file_input;
   this->initialize();
