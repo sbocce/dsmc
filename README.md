@@ -8,6 +8,8 @@ This will first of all compile lodepng, then it will go into src and compile
 the main program.
 The executable is placed into the 'bin' directory.
 
+**RUNNING**
+
 You can run the program from wherever you want; the output will be put into
 a folder in the working directory, named 'output'.
 
@@ -43,7 +45,7 @@ DONE 2) properties of particles such as mass and charge are stored into
 
 Ok, for now the advection of particles is implemented in 1D.
 The particles move and periodicity is applied in the Y and Z direction.
-The istantaneous state is plotted on a PNG image.
+tHE ISTANtaneous state can be plotted on a PNG image (set into input file).
 
 *TODO 0*: be careful! If velocity is so high that a particle spans one cell
           and its neighboring also during only one timestep, then it will be 
