@@ -11,20 +11,29 @@ The executable is placed into the 'bin' directory.
 You can run the program from wherever you want; the output will be put into
 a folder in the working directory, named 'output'.
 
+The program requires an input file and a file specifying properties of the 
+chemical species. The former is to be specified in the input file
+
+Usage:
+  ./main.exe  inputfile
 
 **NOW DOING..**
 
 I'm creating an object sol\_data, that reads an input file and saves:
-1) general properties for the solver such as dt and solution\_type
-2) properties of particles such as mass, diameter, reference temperatures,
-   collisional parameters etc, and all those can be called by the collisor 
-   routine.
+DONE 1)  general properties for the solver such as dt and solution\_type
+DONE 2) properties of particles such as mass and charge are stored into 
+   this class
+3) Reading diameter, reference temperatures, collisional parameters etc, 
+   from the inizializator of the collider.
+   All those can be called by the collisor routine.
+   The collider will use the function sim\_data::file\_to\_string to 
+   convert the input file
 
-THEN I have to add into the particle class an integer variable "species".
-This will imply modifying the seed\_particle() function..
+4) I have to add into the particle class an integer variable "species".
+   This will imply modifying the seed\_particle() function..
 
-THEN I have to implement HS and VHS collisional models.. Start from the 
-solver::collision\_step().
+5) I have to implement HS and VHS collisional models.. Start from the 
+   solver::collision\_step().
 
 
 **COMMENTS AND USELESS STUFF**

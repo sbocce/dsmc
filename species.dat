@@ -1,0 +1,21 @@
+#
+# CHEMICAL SPECIES
+#
+# This file contains a list of chemical species and their
+# parameters, needed for collisions for example.
+#
+# Collisional parameters to be specified depend on the chosen modeling. See 
+# 
+# Format:
+#  name    mass [kg]    charge [e]   various_collisional_parameters
+# Example:
+#  N2    4.652e-26        0           ....
+#  e     9.109e-31       -1           ....
+
+N2    4.652e-26        0    
+
+e     9.109e-31       -1    
+
+
+
+

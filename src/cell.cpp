@@ -145,7 +145,7 @@ void cell::pop_particle(size_t particle_id)
 
 // --------------------------------------------
 
-void cell::advect_particle(size_t particle_id, double dt, const char* sol_type)
+void cell::advect_particle(size_t particle_id, double dt, std::string sol_type)
 {
   // --------------------------------------------------------------------------
   // The following is done for each direction independently 
@@ -188,7 +188,7 @@ void cell::advect_particle(size_t particle_id, double dt, const char* sol_type)
   // 3) If the particle exits from the X face I check which face was it and then 
   //    treat it accordingly
   // 
-  if( !strcmp(sol_type, "1D")) {
+  if( !sol_type.compare("1D")) {
 
     p_part->pos[0] = p_part->pos[0] + p_part->vel[0]*dt;
     p_part->pos[1] = p_part->pos[1] + p_part->vel[1]*dt;

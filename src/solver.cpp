@@ -98,14 +98,16 @@ void solver::translation_step()
     }
 
     // And once it's done, implement some kind of validation and export it!!!!!!
-    char integer_string[32];
-    sprintf(integer_string, "%05d", timestep);
-    char filename[512] = "./output/provaoutput";
-    char extension[31] = ".png";
-    strcat(filename, integer_string);
-    strcat(filename, extension);
-
-    p_expt->plot_particles_PNG(filename);
+    if(p_data->get_png_flag()) {
+      char integer_string[32];
+      sprintf(integer_string, "%05d", timestep);
+      char filename[512] = "./output/provaoutput";
+      char extension[31] = ".png";
+      strcat(filename, integer_string);
+      strcat(filename, extension);
+  
+      p_expt->plot_particles_PNG(filename);
+    }
 
   }
 

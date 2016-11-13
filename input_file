@@ -1,0 +1,18 @@
+#
+# Input file
+#
+
+Timestep:
+0.0002
+
+Fnum:
+1000
+
+Solution Type:
+1D
+
+Species File:
+species.dat
+
+PNG exporting:
+0

@@ -1,4 +1,5 @@
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <fstream>
 #include <stdlib.h>     /* system, exit, EXIT_FAILURE */
@@ -15,28 +16,6 @@ sim_data::sim_data(std::string s_file_input)
 
 // ---------------------------------------------
 
-void sim_data::initialize()
-{
-  std::cout << std::endl;
-
-  read_input_file();
-
-
-  std::cout << " ATTENTION: sim_data::initialize() should read an input file and pick the DeltaT for example!\n";
-  std::cout << "            hard-coded for now!\n";
-
-
-  dt   = 0.0001; // <<<-----------------  HHHAAAAAARD COOOODED!!!!!
-  Fnum = 1000;   // <<<-----------------  HHHAAAAAARD COOOODED!!!!!
-
-  sol_type = "1D";
-
-  std::cout << "Ciao!" << std::endl;
-  return;
-}
-
-// ---------------------------------------------
-
 double sim_data::get_dt()
 {
   return this->dt;
@@ -44,9 +23,23 @@ double sim_data::get_dt()
 
 // ---------------------------------------------
 
-const char* sim_data::get_sol_type()
+std::string sim_data::get_sol_type()
 {
   return this->sol_type;
+}
+
+// ---------------------------------------------
+
+size_t sim_data::get_n_species()
+{
+  return this->n_species;
+}
+
+// ---------------------------------------------
+
+bool sim_data::get_png_flag()
+{
+  return this->png_flag;
 }
 
 // ---------------------------------------------
@@ -72,80 +65,141 @@ std::string sim_data::parseline(std::string line)
 
 // ---------------------------------------------
 
-void sim_data::read_input_file()
+void sim_data::file_to_string(std::string s_file, std::vector<std::string>& linesVect)
 {
+  // This function opens the file named s_file and writes it into the given
+  // vector of strings linesVect, one element for each significant line.
 
-  std::cout << "Loading Input file '" << s_file_input << "'" << std::endl;
+  // First of all empty the vector
+  linesVect.clear();
 
   // Open file
-  const char * filename = s_file_input.c_str();
+  std::cout << "Loading file '" << s_file << "'" << std::endl;
+  const char * filename = s_file.c_str();
 
   std::ifstream filein;
   filein.open(filename);
   if (!filein) {
-      std::cout << "ERROR: couldn't open input file." << std::endl;
+      std::cout << "ERROR: couldn't open file '" << filename << "'." << std::endl;
       exit(1);
   }
 
-//  // Initializing variables to value "empty"
-//  s_mixture      = "empty";
-//  s_state_model  = "empty";
-//  s_thermo_db    = "empty";
-//
-//  // Auxiliary variables
-//  std::string line;
-//  std::vector<std::string> linesVect;
-//
-//  // read lines
-//  while(getline(filein, line)){
-//
-//      // Parse the line
-//      line = parseline(line);
-//
-//      // If the line is not empty, save it in a vector of strings
-//      if(line.length() > 0) {
-//         linesVect.push_back(line);
-//      }
-//
-//  }
-//
-//
-//  // Check for known syntax into the vector of saved lines
-//  std::string lineNow;
-//  for(size_t ii = 0; ii < linesVect.size(); ++ii) {
-//
-//    lineNow = linesVect.at(ii);
-//
-//    if(lineNow.compare("Problem Type:")==0) {
-//        s_problem_type = linesVect.at(ii+1);
-//    }
-//    if(lineNow.compare("Name of the mixture:")==0) {
-//        s_mixture = linesVect.at(ii+1);
-//    }
-//    if(lineNow.compare("State Model:")==0) {
-//        s_state_model = linesVect.at(ii+1);
-//    }
-//    if(lineNow.compare("Thermodynamic Database:")==0) {
-//        s_thermo_db = linesVect.at(ii+1);
-//    }
-//    if(lineNow.compare("Mesh:") == 0) {
-//        s_mesh = linesVect.at(ii+1);
-//    }
-//    if(lineNow.compare("Free Stream Conditions:") == 0) {
-//        s_free_stream_conditions = linesVect.at(ii+1);
-//    }
-//  }
-//
-//  // Variables to save read strings
-//  std::cout << "\nInput file was read: "                  << std::endl;
-//  std::cout << "    Problem Type: "                       << s_problem_type            << std::endl;
-//  std::cout << "    Mixture: "                            << s_mixture                 << std::endl;
-//  std::cout << "    State Model: "                        << s_state_model             << std::endl;
-//  std::cout << "    Thermodynamic Database: "             << s_thermo_db               << std::endl;
-//  std::cout << "    Mesh (TEMPORARY): "                   << s_mesh                    << std::endl;
-//  std::cout << "    Free Stream Conditions (TEMPORARY): " << s_free_stream_conditions  << std::endl;
-//  std::cout << std::endl;
-//
+  std::string line; // auxiliary variable
+
+  // read lines
+  while(getline(filein, line)){
+
+      // Parse the line
+      line = parseline(line);
+
+      // If the line is not empty, save it in a vector of strings
+      if(line.length() > 0) {
+         linesVect.push_back(line);
+      }
+
+  }
+
+  return;
+}
+
+// ---------------------------------------------
+
+void sim_data::initialize()
+{
+  // This function initializes the data class, by reading the
+  // input file and the species file.
+  // Values are written into local variables.
+
+  // working variables..
+  std::vector<std::string> linesVect;
+  std::string              lineNow;
+  std::stringstream        lineStream;
+
+  // ############   READ INPUT FILE   ###################
+
+  file_to_string(s_file_input, linesVect);
+
+  // Check for known syntax into the vector of saved lines
+  for(size_t ii = 0; ii < linesVect.size(); ++ii) {
+
+    lineNow = linesVect.at(ii);
+
+    // ---  Solution Type
+    if(lineNow.compare("Solution Type:")==0) {
+        // It's just a string, no need for a stringstream object
+        this->sol_type = linesVect.at(ii+1);
+    }
+
+    // ---  Fnum
+    if(lineNow.compare("Fnum:")==0) {
+        lineStream.str("");                 // empty buffer and ..
+        lineStream.clear();                 // .. clear the string
+
+        lineStream.str(linesVect.at(ii+1)); // assign the string to ss object
+        lineStream >> this->Fnum;           // transform string into a double
+    }
+
+    // --- Timestep
+    if(lineNow.compare("Timestep:")==0) {
+        lineStream.str("");                 // empty buffer and ..
+        lineStream.clear();                 // .. clear the string
+
+        lineStream.str(linesVect.at(ii+1)); // assign the string to ss object
+        lineStream >> this->dt;             // transform string into a double
+    }
+
+    // ---  Solution Type
+    if(lineNow.compare("Species File:")==0) {
+        // It's just a string, no need for a stringstream object
+        this->species_file = linesVect.at(ii+1);
+    }
+
+    // --- PNG exporting
+    // An image is exported at each timestep
+    if(lineNow.compare("PNG exporting:")==0) {
+      lineStream.str("");                 // empty buffer and ..
+      lineStream.clear();                 // .. clear the string
+
+      lineStream.str(linesVect.at(ii+1)); // assign the string to ss object
+      lineStream >> this->png_flag;       // transform string into a double
+    }
+
+  }
+
+  // Variables to save read strings
+  std::cout << "\nInput file was read: " << std::endl;
+  std::cout << "    Solution type: "         << this->sol_type     << std::endl;
+  std::cout << "    Timestep:      "         << this->dt           << std::endl;
+  std::cout << "    Fnum:          "         << this->Fnum         << std::endl;
+  std::cout << "    Species file:  "         << this->species_file << std::endl;
+
+  std::cout << std::endl;
+
+  // ##############   READ SPECIES FILE   ###############
+
+  std::string nameNow;       // tmp
+  double massNow, chargeNow; // tmp
+
+  file_to_string(this->species_file, linesVect);
+
+  // Number of species is the number of non-null lines in the file:
+  this->n_species = linesVect.size();
+
+  // For each species, unpack the read line
+  for(size_t id_s = 0; id_s < this->n_species; ++id_s)
+  {
+    lineStream.str("");                 // empty buffer and ..
+    lineStream.clear();                 // .. clear the string
+  
+    lineStream.str(linesVect.at(id_s)); // assign the string to ss object
+   
+    lineStream >> nameNow >> massNow >> chargeNow;
+
+    this->species_name.push_back(nameNow);
+    this->species_mass.push_back(massNow);
+    this->species_charge.push_back(chargeNow);
+  }
+
   return;
 }
 

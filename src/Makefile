@@ -1,7 +1,12 @@
 # Hello! :)
 
-CMP = g++  -c  -g
-LNK = g++
+CMP = g++  -c  -g 
+LNK = g++  
+
+# For profiling with gprof uncomment this:
+#CMP = g++  -c  -g  -pg
+#LNK = g++  -pg
+
 
 # I need the headers of lodepng, that are in main_dir/lodepng
 OPT = -I../lodepng
