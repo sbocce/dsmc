@@ -20,9 +20,12 @@ Usage:
 **NOW DOING..**
 
 I'm creating an object sol\_data, that reads an input file and saves:
+
 DONE 1)  general properties for the solver such as dt and solution\_type
+
 DONE 2) properties of particles such as mass and charge are stored into 
    this class
+
 3) Reading diameter, reference temperatures, collisional parameters etc, 
    from the inizializator of the collider.
    All those can be called by the collisor routine.
